@@ -1,0 +1,13 @@
++ Database connection is done by importing from a seperate file("connect_db")
+
+
+``Login`` 
++ Functions is working
+
++ No pop up window for now, currently using frames -- probably will use window for other functions. 
+
+``Sign (Work in Progress)``
++ Storing Data after inputting all fields works, but
+validation is still work in progress 
+
+
