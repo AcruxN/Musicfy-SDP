@@ -176,8 +176,8 @@ if True:
             c = artist_var.get()
             a = user_var.get()
             print(y,m,c,a)
-        checkbooo = tk.Button(tl_frame, text="check", command=show)
-        checkbooo.grid()
+        # checkbooo = tk.Button(tl_frame, text="check", command=show)
+        # checkbooo.grid()
 
         tl_frame.grid(row=0, column=0)
 
