@@ -14,7 +14,7 @@ create table `audio_tbl` (
     `uid` int not null, -- id of Artist / Uploader
     `audio_path` varchar(255) not null, -- Reason of not storing as BLOB: Performance overhead
     primary key (aid),
-    foreign key (uid) references user_tbl(uid)
+    foreign key (uid) references user_tbl(uid) on delete cascade
 );
 
 -- constraint Primary key = foreign+foreign/unique from other tables to form PK
@@ -22,8 +22,8 @@ create table `like_tbl` (
     `aid` int not null,
     `uid` int not null,
     `like_status` tinyint(1), -- 0 = dislike, 1 = like,  no react = delete
-    foreign key (aid) references audio_tbl(aid),
-    foreign key (uid) references user_tbl(uid),
+    foreign key (aid) references audio_tbl(aid) on delete cascade,
+    foreign key (uid) references user_tbl(uid) on delete cascade,
     constraint PK_likes primary key (aid,uid)
 );
 
@@ -36,8 +36,8 @@ create table `category_tbl` (
 create table `song_in_category` (
     `cid` int not null,
     `aid` int not null,
-    foreign key (cid) references category_tbl(cid),
-    foreign key (aid) references audio_tbl(aid),
+    foreign key (cid) references category_tbl(cid) on delete cascade,
+    foreign key (aid) references audio_tbl(aid) on delete cascade,
     constraint PK_sic primary key (cid,aid)
 );
 
@@ -45,14 +45,14 @@ create table `playlist_tbl` (
     `pid` int not null auto_increment, -- Unique code for every playlist
     `uid` int not null,                -- Owner of playlist
     primary key (pid),
-    foreign key (uid) references user_tbl(uid)
+    foreign key (uid) references user_tbl(uid) on delete cascade
 );
 
 create table `song_in_playlist` (
     `pid` int not null,
     `aid` int not null,                -- Songs in the playlist
-    foreign key (pid) references playlist_tbl(pid),
-    foreign key (aid) references audio_tbl(aid),
+    foreign key (pid) references playlist_tbl(pid) on delete cascade,
+    foreign key (aid) references audio_tbl(aid) on delete cascade,
     constraint PK_sip primary key (pid,aid)
 );
 
