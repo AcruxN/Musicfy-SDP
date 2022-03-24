@@ -4,6 +4,7 @@ import pygame as pg
 from tkinter import StringVar, filedialog, messagebox
 from pathlib import Path
 from py_SQL import db_connection
+from Driveconnection_testing.driveconnector import FileUpload
 import shutil
 
 db, mycursor = db_connection()
@@ -26,8 +27,10 @@ root.resizable(width=False, height=False)
 
 # ============================ Functions =======================================
 #IMPORTANT: py_SQL.py file make changes for cursor :- mycursor = db.cursor(buffered=True)
+#user name and user id below need to change when system is integrated
+user_id = str(1) #Get user id from database
 
-user_id = str(1) #Get user id from database when login with query
+
 file_path=''
 #Get menu choice
 def get_category():
@@ -66,13 +69,11 @@ def Audio_upload():
     elif len(categoryList) == 0:        
         messagebox.showwarning('Error!', 'Please choose a category!')
     else:
-        #Copy audio to the file (If able to host databse, change to upload to database)
-        audio_uploaded = shutil.copy(file_path, 'C:/Users/USER/OneDrive/Documents/GitHub/Musicfy-SDP/audio_files folder/') #change to audio file path
-        #rename file to match audio name and aid
-        global audio_location
-
-        audio_location = 'C:/Users/USER/OneDrive/Documents/GitHub/Musicfy-SDP/audio_files folder/' + audio_name  + '_'+user_id+'.mp3'
-        os.rename(audio_uploaded, audio_location) #Rename audio in audio folder as name entered
+        file_name = audio_name
+        global uploadid
+        uploadid = FileUpload(file_name, user_id, file_path) #get username
+        
+        
         # All category selected
 
         for c in categoryList:
@@ -104,7 +105,7 @@ def updateAudio_category():
 def Update_database():
     try:
         #Insert list into database
-        audio_sql = "INSERT INTO audio_tbl (audio_name, uid, audio_path) VALUES ('{}','{}','{}')".format(audio_name, user_id, audio_location)
+        audio_sql = "INSERT INTO audio_tbl (audio_name, uid, audio_path) VALUES ('{}','{}','{}')".format(audio_name, user_id, uploadid)
         mycursor.execute(audio_sql)
         db.commit()
         messagebox.showinfo('', 'Audio uploaded successfully!')
