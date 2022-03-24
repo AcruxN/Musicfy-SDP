@@ -1,0 +1,237 @@
+============================Main/Basic Function=============================
+
+[[GENERAL]]
+    Login | x
+    Sign Up | x
+    Main Page | x
+
+    [Guest]
+        Listen Songs | x
+        Search Songs | x
+        Play Playlists | x
+        - Login as user for more | x
+
+
+[Admin]
+    Delete/Ban user | x
+
+[Artist]
+    Upload Songs | x
+
+[User]
+    - Guest func | x
+    Create Playlists | x
+    Like / Dislike | x
+
+
+
+=============================================================================
+
+Stuff to be added
+    Restriction on audio size(not yet added)
+    - 1 song 40mb at max (1 min of .wav[44.1khz, 16-bit] ~ 10mb)
+        File size – WAV files are large. A stereo, CD quality recording (44.1khz, 16-bit), works out at 10.09 MB per minute. 
+        Moving up to 48kHz 24-bit stereo (which will improve both the frequency range and the available dynamic range) will increase file size to 16.48 MB per minute.
+
+    Restriction on Search bar input 
+
+
+
+
+↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
+     |Grab Extra Features From Below When Main Is Done|
+↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
+
+
+----------------------------Jason-------------------------------
+Musicfy 2.0 
+
+Functional Requirements 
+
+[ Artist ] 
+    + Upload songs/album 
+    + Updates an album  
+
+[ Listener ] 
+    + Select and queue a song  
+    + Pick an album to listen  
+    + Like song which will be added to the history  
+    + Create own playlist  
+
+
+[ Admin ] 
+    + Remove songs/album 
+
+----------------------------Clarence-------------------------------
+Music Player 
+
+<User interface >
+    Search song 
+    Play song 
+
+<Admin interface >
+    Manage accounts 
+    Manage songs 
+
+<Artist interface >
+    Upload songs 
+    User interface 
+
+-----------------------------Chloe------------------------------
+Musicfy 
+
+<Background >
+
+<Problem >
+    Creators have less to no platform to upload their contents 
+    Other platforms require high fees to reach wider audiences 
+
+<Solution>
+    Provide a platform for them 
+    Better promote method 
+    Functional requirements 
+
+<Listener >
+    Search and listen to music 
+    Rate music 
+    Create playlist 
+
+<Creator >
+    Upload and remove content 
+    Create album/playlist 
+
+<Admin >
+    Remove content or creator 
+    Notify creator?? 
+
+Non-functional requirements*
+
+Easy to read and find songs 
+    Should not compress song quality 
+    Be able to handle many users at a time 
+
+--------------------------Acrux---------------------------------
+Musicfy
+
+<Background >
+
+<Problem >
+    No platform 
+    Not organised 
+
+<Solution >
+    This program 
+
+<Objective >
+    Research on past program 
+    Implement (function) 
+    Implement (function) 
+
+Functional Requirement* 
+
+<Admin >
+    Delete / Ban user 
+    Delete DMCA songs 
+    Implement new system / algorithm 
+
+
+<Music Artist >
+    Upload sound track 
+    Charge Money 
+    Track income 
+    Track number of listener (Graph [over time]) 
+
+
+<Listener >
+    Listen songs from new artist 
+    Popular picks (recommend) 
+    Favorite 
+    Get notification for new songs 
+    Hide artist (someone you don’t want to listen from) 
+    Access playlist 
+
+ 
+
+Non functional requirement* 
+
+<Artist>
+    Sound track with thumbnail  
+    ft other ppl 
+
+<Listener>
+    Easy to use GUI 
+    Quick load time 
+
+
+
+
+Direct user to specific page by user role when login
+-- User Login -> User Page 
+-- Admin Login -> Admin Page
+
+
+Admin 
+-- Search & Ban User
+
+
+
+
+============================Main/Basic Function=============================
+
+[[GENERAL]]
+    Login | [Zhen Yao]
+    Sign Up | [Zhen Yao]
+    Main Page | x
+
+    [Guest]
+        Listen Songs | [Nam Tung]
+        Search Songs | [Nam Tung]
+        Play Playlists | [Clarence & Nam Tung]
+        - Login as user for more | x
+
+
+[Admin]
+    Delete/Ban user | [Zhen Yao]
+
+[Artist]
+    Upload Songs | [Chloe]
+
+[User]
+    - Guest func | [Nam Tung]
+    Create Playlists | [Nam Tung]
+    Like / Dislike | [Nam Tung]
+
+
+List of Modules
+- display_song (nam tung)
+- search_audio (nam tung)
+
+- admin (zhen yao) 
+- loginsignup (zhen yao)
+
+- playlist (clarence / nam tung)
+
+- user account (andrew)
+- admin account (andrew)
+
+- upload songs (chloe)
+
+============================ Modules To Be Tested =============================
+
+[Zhen Yao]
+    loginsignup.py | [Ready]
+    admin_win.py | [Ready]
+
+[Nam Tung]
+    display_songs.py | [Ready]
+    search_audio.py | [Ready]
+
+[Chloe]
+    upload_songs.py | [Ready]
+
+[Clarence]
+    playlist | [Not Ready]
+
+[Andrew]
+    user account | [Not Ready]
+    admin account | [Not Ready]
