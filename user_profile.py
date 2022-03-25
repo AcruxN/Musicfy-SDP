@@ -1,5 +1,5 @@
 # bring forth the data from login
-# need to make the modify profile function work
+# close the old frame and call the frame again to display newest information
 # add function to the buttons
 # ===================================== User Main =====================================
 
@@ -97,6 +97,9 @@ def changetoartist():
     mycursor.execute(changeusertype)
     db.commit()
     messagebox.showinfo(title=None, message="You have successfully become an artist")
+    # profile.destroy()
+    # raise_frame(profile)
+
 
 
 if usertype == "listener":
@@ -206,7 +209,7 @@ def check_info():
     userexists = mycursor.fetchall()
 
     check_symbol= re.compile('[@_!#$%^&*()<>?/\|}{~:]')
-
+    # messagebox.showinfo("Message","Username taken please use another username")
     if len(usern) == 0:
         messagebox.showinfo("Error", "Username Can\'t be empty")
     elif len(passw) == 0:
@@ -257,17 +260,16 @@ def check_info():
                 password_entry.delete(0, tk.END)
                 
             else:
-                reg_sql = f'UPDATE INTO user_tbl  set username = "{usern}", password = "{passw}" WHERE username ="{username}"'
+                reg_sql = "UPDATE user_tbl SET username = '" + usern + "', password =  '" + passw + "' WHERE username = '" + username + "'"
                 mycursor.execute(reg_sql)
                 db.commit()
-                messagebox.showinfo("Information", "Registration Successfull!")
-
-                username_entry.set("")
-                password_entry.set("")
+                messagebox.showinfo("Information", "Changes is Successfull!")
 
                 # clears the input box empty after a successful registration process
                 username_entry.delete(0, tk.END)
-                password_entry.delete(0, tk.END) 
+                password_entry.delete(0, tk.END)
+                # edit.destroy()
+                # raise_frame(profile)
         except:
             print("There is an error")
 
