@@ -1,7 +1,6 @@
 # bring forth the data from login
 # need to make the modify profile function work
 # add function to the buttons
-
 # ===================================== User Main =====================================
 
 import re
@@ -94,9 +93,11 @@ if usertype == "artist":
 
 def changetoartist():
     # change the user type database from listener to artist
-    changeusertype = 'update user_tbl set usertype = "artist"'
+    changeusertype = f'update user_tbl set usertype = "artist" where username = "{username}"'
     mycursor.execute(changeusertype)
     db.commit()
+    messagebox.showinfo(title=None, message="You have successfully become an artist")
+
 
 if usertype == "listener":
     createplaylist_button = tk.Button(profile, text="Create Playlist", command=lambda:())#function here)
@@ -187,6 +188,7 @@ def UploadAction(event=None):
     uploadname = str(user_id)+'.jpg'
     print(file_id)
     ImageDownload(file_id, uploadname)
+
 # upload the info to sql
     upload_file = f'update user_tbl set profile_image = "{uploadname}", image_id="{file_id}" where username="{username}"'
     mycursor.execute(upload_file)
@@ -199,8 +201,8 @@ button.pack()
 def check_info():
     usern = username_entry.get()
     passw = password_entry.get()
-    checkuser = "SELECT username FROM user_tbl WHERE username = {usern}"
-    mycursor.execute(checkuser)
+    checkuser = "SELECT username FROM user_tbl WHERE username = %s"
+    mycursor.execute(checkuser, (usern, ))
     userexists = mycursor.fetchall()
 
     check_symbol= re.compile('[@_!#$%^&*()<>?/\|}{~:]')
@@ -255,9 +257,8 @@ def check_info():
                 password_entry.delete(0, tk.END)
                 
             else:
-                reg_sql = "UPDATE INTO user_tbl WHERE userid =? (username, password) VALUES (%s, %s)"
-                reg_val = (usern, passw)
-                mycursor.execute(reg_sql, reg_val)
+                reg_sql = f'UPDATE INTO user_tbl  set username = "{usern}", password = "{passw}" WHERE username ="{username}"'
+                mycursor.execute(reg_sql)
                 db.commit()
                 messagebox.showinfo("Information", "Registration Successfull!")
 
