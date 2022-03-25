@@ -1,3 +1,7 @@
+# bring forth the data from login
+# need to make the modify profile function work
+# add function to the buttons
+
 # ===================================== User Main =====================================
 
 import re
@@ -23,9 +27,9 @@ root.geometry("500x500")
 root.title("Musicfy")
 
 
-# to declare second frame
+# to declare first frame
 profile = tk.Frame(root)
-#to declare edit profile(third frame)
+#to declare edit profile(second frame)
 edit = tk.Frame(root)
 
 
@@ -35,29 +39,17 @@ def raise_frame(frame):
 for frame in (profile, edit):
     frame.place(x=0, y=0, width=500, height=500)
 
-# selection either listener or artist (to upload songs)
 
-# first frame code here
-
-# from id check database and display the username
-
-import loginsignup_2
-
-userNameooo = loginsignup_2.userName
-
-print(userNameooo)
-tk.Label(profile, text="Welcome, " +userNameooo).grid(row=1, column=7) 
-
-# second frame insert thing here
+# ======================first frame insert thing here======================
 
 # main title
 userprofile = tk.Label(profile, text="User Profile")
 userprofile.place(x=0, y=0)
-userprofile.config(font=('Helvatical bold',28))
+userprofile.config(font=('Helvatical bold',26))
 
-username = "admin"
-print(username)
-tk.Label(profile, text="Welcome, " + username ).grid(row=1, column=7) 
+username = "imlistener"
+# print(username)
+# tk.Label(profile, text="Welcome, " + username ).grid(row=1, column=7) 
 
 # to take select the row containing that username
 selecteduser = 'select * FROM user_tbl WHERE username = "%s"' % username
@@ -75,21 +67,79 @@ for row in results:
             label.place(x=20, y=60)
         else:#display default profile if databse is none
             ini_img = Image.open("image/defaultprofile.jpg")
-            img = ImageTk.PhotoImage(ini_img.resize((100,150), Image.ANTIALIAS))
+            img = ImageTk.PhotoImage(ini_img.resize((150,150), Image.ANTIALIAS))
             label = tk.Label(profile, image = img)
             label.place(x=20, y=60)
 
 # display other info 
+usertype = results[0][1]
+username = results[0][2]
+subscription = results[0][4]
+uploaded = results[0][5]
+downloaded = results[0][6]
+
+if usertype == "artist":
+    # display button
+    uploadsong_button = tk.Button(profile, text="Upload Song", command=lambda:())#function here)
+    uploadsong_button.place(x=50, y=400)
+
+    viewownsong_button = tk.Button(profile, text="View Own Song", command=lambda:())#function here)
+    viewownsong_button.place(x=150, y=400)
+
+    createplaylist_button = tk.Button(profile, text="Create Playlist", command=lambda:())#function here)
+    createplaylist_button.place(x=265, y=400)
+
+    viewplaylist_button =tk.Button(profile, text="View Playlist", command=lambda:())#function here)
+    viewplaylist_button.place(x=370, y=400)
+
+def changetoartist():
+    # change the user type database from listener to artist
+    changeusertype = 'update user_tbl set usertype = "artist"'
+    mycursor.execute(changeusertype)
+    db.commit()
+
+if usertype == "listener":
+    createplaylist_button = tk.Button(profile, text="Create Playlist", command=lambda:())#function here)
+    createplaylist_button.place(x=70, y=400)
+
+    viewplaylist_button =tk.Button(profile, text="View Playlist", command=lambda:())#function here)
+    viewplaylist_button.place(x=220, y=400)
+
+    changetoartist_button =tk.Button(profile, text="Become an Artist", command=lambda:changetoartist())#function here)
+    changetoartist_button.place(x=350, y=400)
+
+displayusername = tk.Label(profile, text=f"User Name : {username} ")
+displayusername.place(x=200, y=80)
+displayusername.config(font=('Helvatical bold',14))
+
+displayusertype = tk.Label(profile, text=f"User Type : {usertype}")
+displayusertype.place(x=200, y=140)
+displayusertype.config(font=('Helvatical bold',14))
+
+if subscription == 0:
+    subscription = "Not Subscribed"
+else:
+    subscription = "Subscribed"
+
+displaysubscription = tk.Label(profile, text=f"Subscription : {subscription}")
+displaysubscription.place(x=200, y=200)
+displaysubscription.config(font=('Helvatical bold',14))
+
+displayuploaded = tk.Label(profile, text=f"Uploaded Songs : {uploaded}")
+displayuploaded.place(x=200, y=260)
+displayuploaded.config(font=('Helvatical bold',14))
+
+displaydownloaded = tk.Label(profile, text=f"Downloaded Songs : {downloaded}")
+displaydownloaded.place(x=200, y=320)
+displaydownloaded.config(font=('Helvatical bold',14))
+# print(results[0][2])
+
+edit_profile_button = tk.Button(profile, text="Edit Profile", command=lambda: raise_frame(edit))
+edit_profile_button.place(x=60, y=220)
 
 
+# ======================second frame insert thing here======================
 
-edit_profile_button = tk.Button(profile, text="edit profile", command=lambda: raise_frame(edit))
-edit_profile_button.place(x=30, y=200)
-
-
-# third frame here
-
-# main title
 modify = tk.Label(edit, text="Modify Profile")
 modify.pack()
 modify.config(font=('Helvatical bold',28))
@@ -105,7 +155,6 @@ changeusername.pack()
 username_entry = tk.Entry(edit, textvariable=changeusername)
 username_entry.pack()
 
-# still to do verification again and compare to make sure the same username is not used
 
 # ======================modify password part=====================
 # password label
@@ -118,8 +167,6 @@ password_entry.pack()
 regpass_label1 = tk.Label(edit, text="")
 regpass_label1.pack()
 
-# need to do the same thing for pass prolly can reuse the code
-
 
 # ======================modify profile image part=====================
 # get user id
@@ -130,7 +177,7 @@ for getid in results:
     user_id=getid[0]
     break
 
-# upload button
+# upload image button
 changeprofile = tk.Label(edit, text="Change Profile Image:", font=("Calibri", 12, "bold"))
 changeprofile.pack()
 def UploadAction(event=None):
@@ -152,12 +199,12 @@ button.pack()
 def check_info():
     usern = username_entry.get()
     passw = password_entry.get()
-    checkuser = "SELECT username FROM user_tbl WHERE username = %s"
-    mycursor.execute(checkuser, (usern, ))
+    checkuser = "SELECT username FROM user_tbl WHERE username = {usern}"
+    mycursor.execute(checkuser)
     userexists = mycursor.fetchall()
 
     check_symbol= re.compile('[@_!#$%^&*()<>?/\|}{~:]')
-    messagebox.showinfo("Message","Username taken please use another username")
+
     if len(usern) == 0:
         messagebox.showinfo("Error", "Username Can\'t be empty")
     elif len(passw) == 0:
@@ -208,8 +255,9 @@ def check_info():
                 password_entry.delete(0, tk.END)
                 
             else:
-                reg_sql = 'UPDATE user_tbl SET username =  "{usern}", password =  "{passw}", WHERE username= "{username}"'
-                mycursor.execute(reg_sql)
+                reg_sql = "UPDATE INTO user_tbl WHERE userid =? (username, password) VALUES (%s, %s)"
+                reg_val = (usern, passw)
+                mycursor.execute(reg_sql, reg_val)
                 db.commit()
                 messagebox.showinfo("Information", "Registration Successfull!")
 
@@ -218,17 +266,16 @@ def check_info():
 
                 # clears the input box empty after a successful registration process
                 username_entry.delete(0, tk.END)
-                password_entry.delete(0, tk.END)
-                raise_frame(profile)
+                password_entry.delete(0, tk.END) 
         except:
             print("There is an error")
-# ======================button part=====================
-# button for edit
-savebutton = tk.Button(edit, text="Save Changes", command=check_info())
 
+# ======================button part=====================
+
+savebutton = tk.Button(edit, text="Save Changes", command=lambda:check_info())
 savebutton.pack()
 
-# button for edit frame to go back to the main frame
+# # button for edit frame to go back to the main frame
 mainbutton= tk.Button(edit, text="Main", command=lambda: raise_frame(profile))
 mainbutton.pack()
         
