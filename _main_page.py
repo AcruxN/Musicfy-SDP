@@ -16,6 +16,7 @@ import tkinter
 from turtle import width, window_height
 # from cv2 import split
 import pygame as pg
+from pyparsing import col
 from py_SQL import db_connection
 # from driveconnector import ImageDownload, ImageUpload
 
@@ -1136,7 +1137,7 @@ if True:
                 for i in myresult:
                     for j in i:
                         total_like_received = j
-                entryArtist_like.set("{}".format(total_like_received))
+                entryArtist_like.set("{}".format("Likes Received: "+ str(total_like_received)))
 
                 # select sum(like_status) from like_tbl where uid = 1
                 searchAudioQuery ="select a.audio_name from audio_tbl a, user_tbl u where (a.uid = u.uid) and u.username = '{}'".format(item_picked)
@@ -1277,7 +1278,7 @@ if True:
         def stopSong():
             pg.mixer.music.stop()
 
-    # #Top Right
+    # #Top & Mid Right
     if True:
         tr_frame = tk.Frame(right_frame, height=380, width=400, bg="purple")
         tr_frame.configure(height=tr_frame["height"],width=tr_frame["width"])
@@ -1334,7 +1335,7 @@ if True:
 
             tr_in_frame3.grid(row=1, column=0)
 
-        #Mid right
+        # Mid right
         if True:
             mr_frame = tk.Frame(tr_frame, height=230, width=400, bg="brown")
             mr_frame.configure(height=mr_frame["height"],width=mr_frame["width"])
@@ -1361,11 +1362,15 @@ if True:
 
 
 
-                artist_Listbox = tk.Listbox(tr_in_frame3, height=5, width=30)
+                artist_Listbox = tk.Listbox(tr_in_frame3, height=8, width=30)
                 artist_Listbox.bind('<<ListboxSelect>>', lambda x: pick_artist())
                 artist_Listbox.grid(row=2,column=0)
 
+                eatspace = tk.Label(tr_in_frame3, text="         ", height= 2)
+                eatspace.grid(row=3, column=0)
+
                 tr_in_frame3.grid(row=0, column=0)
+
                 
 
 
@@ -1384,9 +1389,12 @@ if True:
 
 
 
-                playlist_Listbox = tk.Listbox(tr_in_frame2, height=5, width=30)
+                playlist_Listbox = tk.Listbox(tr_in_frame2, height=8, width=30)
                 playlist_Listbox.bind('<<ListboxSelect>>', lambda x: pick_playlist())
                 playlist_Listbox.grid(row=2,column=0)
+
+                selectButton = tk.Button(tr_in_frame2, text="Select", height=1)
+                selectButton.grid(row=3, column=0, pady=5)
 
                 tr_in_frame2.grid(row=0, column=1)
 
