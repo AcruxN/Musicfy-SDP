@@ -84,8 +84,10 @@ if True:
 
             # to declare first frame
             profile = tk.Frame(top)
+            profile.configure(bg='#132933')
             #to declare edit profile(second frame)
             edit = tk.Frame(top)
+            edit.configure(bg='#132933')
 
 
             def raise_frame(frame):
@@ -97,40 +99,41 @@ if True:
 
             # ===================================== first frame insert thing here =====================================
 
+
             # main title
             userprofile = tk.Label(profile, text="User Profile")
-            userprofile.place(x=0, y=0)
-            userprofile.config(font=('Helvatical bold',26))
-
-            # print(username)
-            # tk.Label(profile, text="Welcome, " + username ).grid(row=1, column=7) 
-
+            userprofile.place(x=150, y=0)
+            userprofile.config(fg='white', bg='#132933', font=('Helvatical bold',26, 'bold'))
             # to take select the row containing that username
             selecteduser = 'select * FROM user_tbl WHERE username = "%s"' % username
             mycursor.execute(selecteduser)
             results = mycursor.fetchall()
 
-            # # display profile
-            # for row in results:
-            #     # display profile
-            #         path = "image/"+row[8]
-            #         if os.path.exists(path):
-            #             ini_img = Image.open(path)
-            #             img = ImageTk.PhotoImage(ini_img.resize((100,150), Image.ANTIALIAS))
-            #             label = tk.Label(profile, image = img)
-            #             label.place(x=20, y=60)
-            #         else:#display default profile if databse is none
-            #             ini_img = Image.open("image/defaultprofile.jpg")
-            #             img = ImageTk.PhotoImage(ini_img.resize((150,150), Image.ANTIALIAS))
-            #             label = tk.Label(profile, image = img)
-            #             label.place(x=20, y=60)
+            # display profile
+            for row in results:
+                # display profile
+                    path = "image/"+row[7]
+                    print(path)
+                    if os.path.exists(path):
+                        ini_img = Image.open(path)
+                        img = ImageTk.PhotoImage(ini_img.resize((150,150), Image.ANTIALIAS))
+                        label = tk.Label(profile, image = img)
+                        label.place(x=20, y=60)
+                        print(path)
+                    else:#display default profile if databse is none
+                        ini_img = Image.open("image/defaultprofile.jpg")
+                        img = ImageTk.PhotoImage(ini_img.resize((150,150), Image.ANTIALIAS))
+                        label = tk.Label(profile, image = img)
+                        label.place(x=20, y=60)
 
 
             # ============================================= Upload Songs Function ============================================= #
+            # chloe's code
             def uploadSongs():
                 top.withdraw()
                 up_song = Toplevel()
-                up_song.geometry("400x400")
+                up_song.geometry("300x300")
+                up_song.configure(bg='#132933')
                 up_song.title("Upload Songs")
                 up_song.resizable(width=False, height=False)
 
@@ -226,22 +229,22 @@ if True:
 
                 def Upload_audio():
                     #Create and display upload audio label
-                    uploadAudio = tk.Label(up_song, text = "Upload Audio", font=('Italic', 14), fg="dark blue")
-                    uploadAudio.grid(row = 0, column = 0)
+                    uploadAudio = tk.Label(up_song, text = "Upload Audio", font=('Italic', 15, "bold"), fg="white", bg='#132933')
+                    uploadAudio.grid(row = 0, column = 0 , columnspan=2)
                     #Create and display audio name input bar
-                    audioName = tk.Label(up_song, text = "Audio Name:", font=('Italic', 10), fg="black", )
+                    audioName = tk.Label(up_song, text = "Audio Name:", font=('Italic', 10, "bold"), fg="white", bg='#132933')
                     audioName.grid(sticky='W',row=1,column=0)
                     global inputName
                     inputName = tk.Entry(up_song)
                     inputName.grid(row=1,column=1)
                     #Select audio file label and button
-                    audioFile = tk.Label(up_song, text = "Select audio file:", font=('Italic', 10), fg="black", )
+                    audioFile = tk.Label(up_song, text = "Select audio file:", font=('Italic', 10, "bold"), fg="white", bg='#132933')
                     audioFile.grid(sticky='W',row=2,column=0)
 
                     Open_button = tk.Button(up_song, text='Open', command= Select_file)
                     Open_button.grid(sticky='W', row=2,column=1)
                     # Category label
-                    Category = tk.Label(up_song, text = "Category:", font=('Italic', 10), fg="black", )
+                    Category = tk.Label(up_song, text = "Category:", font=('Italic', 10, "bold"), fg="white", bg='#132933')
                     Category.grid(sticky='NW',row=3,column=0)
                     #Create listbox
                     global category_list
@@ -310,11 +313,11 @@ if True:
 
             displayusername = tk.Label(profile, text=f"User Name : {username} ")
             displayusername.place(x=200, y=80)
-            displayusername.config(font=('Helvatical bold',14))
+            displayusername.config(fg='white', bg='#132933', font=('Helvatical bold',14, 'bold'))
 
             displayusertype = tk.Label(profile, text=f"User Type : {usertype}")
             displayusertype.place(x=200, y=140)
-            displayusertype.config(font=('Helvatical bold',14))
+            displayusertype.config(fg='white', bg='#132933', font=('Helvatical bold',14, 'bold'))
 
             if subscription == 0:
                 subscription = "Not Subscribed"
@@ -323,56 +326,50 @@ if True:
 
             displaysubscription = tk.Label(profile, text=f"Subscription : {subscription}")
             displaysubscription.place(x=200, y=200)
-            displaysubscription.config(font=('Helvatical bold',14))
+            displaysubscription.config(fg='white', bg='#132933', font=('Helvatical bold',14, 'bold'))
 
-            displayuploaded = tk.Label(profile, text=f"Uploaded Songs : {uploaded}")
+            displayuploaded = tk.Label(profile, fg='white', bg='#132933', text=f"Uploaded Songs : {uploaded}")
             displayuploaded.place(x=200, y=260)
-            displayuploaded.config(font=('Helvatical bold',14))
+            displayuploaded.config(fg='white', bg='#132933', font=('Helvatical bold',14, 'bold'))
 
             displaydownloaded = tk.Label(profile, text=f"Downloaded Songs : {downloaded}")
             displaydownloaded.place(x=200, y=320)
-            displaydownloaded.config(font=('Helvatical bold',14))
+            displaydownloaded.config(fg='white', bg='#132933', font=('Helvatical bold',14, 'bold'))
             # print(results[0][2])
 
             edit_profile_button = tk.Button(profile, text="Edit Profile", command=lambda: raise_frame(edit))
             edit_profile_button.place(x=60, y=220)
 
 
+            
 
 
             # ===================================== second frame insert thing here ===================================== 
-
             modify = tk.Label(edit, text="Modify Profile")
-            modify.pack()
-            modify.config(font=('Helvatical bold',28))
+            modify.place(x=120, y=30)
+            modify.config(fg='white', bg='#132933', font=('Helvatical bold',30, 'bold'))
 
 
 
 
             # ===================================== modify username part =====================================
-            usernamelabel = tk.Label(edit, text="")
-            usernamelabel.pack()
-
             # username label
-            changeusername = tk.Label(edit, text="Username: *", font=("Calibri", 12, "bold"))
-            changeusername.pack()
+            changeusername = tk.Label(edit, fg='white', bg='#132933', text="Username: *", font=("Calibri", 15, "bold"))
+            changeusername.place(x=130, y=100)
             # username entry
             username_entry = tk.Entry(edit, textvariable=changeusername)
-            username_entry.pack()
+            username_entry.place(x=250, y=107)
 
 
 
 
             # ===================================== modify password part =====================================
             # password label
-            changepassword = tk.Label(edit, text="Password: *", font=("Calibri", 12, "bold"))
-            changepassword.pack()
+            changepassword = tk.Label(edit,fg='white', bg='#132933', text="Password: *", font=("Calibri", 15, "bold"))
+            changepassword.place(x=130, y=150)
             # password entry
             password_entry = tk.Entry(edit, textvariable=changepassword, show="*")
-            password_entry.pack()
-
-            regpass_label1 = tk.Label(edit, text="")
-            regpass_label1.pack()
+            password_entry.place(x=250, y=157)
 
 
 
@@ -387,8 +384,8 @@ if True:
                 break
 
             # upload image button
-            changeprofile = tk.Label(edit, text="Change Profile Image:", font=("Calibri", 12, "bold"))
-            changeprofile.pack()
+            changeprofile = tk.Label(edit, fg='white', bg='#132933', text="Change Profile Image:", font=("Calibri", 15, "bold"))
+            changeprofile.place(x=110, y=200)
             def UploadAction(event=None):
                 filename = filedialog.askopenfilename()
                 print('Selected:', filename)
@@ -402,16 +399,16 @@ if True:
                 mycursor.execute(upload_file)
                 db.commit()
 
-            button = tk.Button(edit, text='select image here', command=UploadAction)
-            button.pack()
+            button = tk.Button(edit, text='Select Image', command=UploadAction)
+            button.place(x=315, y=205)
 
             # ======================================= Username & Password Validation (Modify) ======================================= #
             # function to check if username taken/password long enough
             def check_info():
                 usern = username_entry.get()
                 passw = password_entry.get()
-                checkuser = "SELECT username FROM user_tbl WHERE username = %s"
-                mycursor.execute(checkuser, (usern, ))
+                checkuser = "SELECT username FROM user_tbl"
+                mycursor.execute(checkuser)
                 userexists = mycursor.fetchall()
 
                 check_symbol= re.compile('[@_!#$%^&*()<>?/\|}{~:]')
@@ -422,11 +419,10 @@ if True:
                     messagebox.showinfo("Error", "Password Can\'t be empty")
                 else:
                     try:
-                        # cheks if user exists in database
+                        # checks if user exists in database
                         # if yes, it will show a error message
                         if userexists:
                             messagebox.showinfo("Error", "Username Already Exists!")
-                            username_entry.delete(0, tk.END)
                             if len(passw) > 10:
                                 messagebox.showinfo("Error", "Password cant be too long")
                                 password_entry.delete(0, tk.END)
@@ -499,26 +495,25 @@ if True:
                             # edit.destroy()
                             # raise_frame(profile)
                     except:
-                        print("There is an error")
+                        messagebox.showerror("Error", "There is an error on the code")
 
 
 
             # ===================================== button part =====================================
-
             savebutton = tk.Button(edit, text="Save Changes", command=lambda:check_info())
-            savebutton.pack()
+            savebutton.place(x=250, y=250)
 
             # # button for edit frame to go back to the main frame
             mainbutton= tk.Button(edit, text="Main", command=lambda: raise_frame(profile))
-            mainbutton.pack()
+            mainbutton.place(x=200, y=250)
                     
             # to display the first frame
             raise_frame(profile) 
 
 
-            user_quit_button = tk.Button(top, text="Quit", command=lambda: quit(top))
+            user_quit_button = tk.Button(profile, text="Quit", command=lambda: quit(top))
             user_quit_button.place(x=450, y=0)
-
+        
 
 
 
@@ -526,7 +521,9 @@ if True:
         def admin(username):
             login.withdraw()
             top = Toplevel()
-            top.geometry("500x500")
+            top.geometry("450x460")
+            top.configure(bg='#132933')
+            top.resizable(height=False, width=False)
             top.title("Admin Page")
             global guest_user
             guest_user = username
@@ -647,33 +644,36 @@ if True:
 
 
             # ============================================= Main =============================================
-            searchUser = tk.Label(top, text="Username | ID: ")
-            searchUser.grid(row=2, column=5)
+            wel_admin = tk.Label(top, width=25, fg='white', bg='#132933', text="Welcome back, " + username +"", font=("Calibri", 15, "bold"))
+            wel_admin.grid(row=1, column=2, columnspan=5)
 
-            tk.Label(top, text="Welcome, " +username).grid(row=1, column=7) 
-            admin_label = tk.Label(top, text="To ban user, enter their user id")
-            admin_label.grid(row=1, column=5)
+            admin_label = tk.Label(top, fg='white', bg='#132933', anchor='center', font=("Calibri", 15, "bold"), text="[To ban user, enter their user id]")
+            admin_label.grid(row=2, column=5, columnspan=3, padx=10, pady=5)
+
+            searchUser = tk.Label(top, fg='white', bg='#132933', font=("Calibri", 15, "bold"), text="Username | ID: ")
+            searchUser.grid(row=3, column=5, padx=8, pady=8)
 
             userEntry = tk.Entry(top)
             userEntry.bind("<KeyRelease>", check)
-            userEntry.grid(row=2, column=6)
+            userEntry.grid(row=3, column=6)
 
-            all_data = tk.Button(top, text="Show All Data", command = showuser)
-            all_data.grid(row=3, column=5)
+            all_data = tk.Button(top, text="Show All Data", command = lambda: showuser())
+            all_data.grid(row=4, column=5, columnspan=3)
 
-            search_button = tk.Button(top, text="Ban", command = banuser)
-            search_button.grid(row=3, column=6)
+            search_button = tk.Button(top, text="Ban", command = lambda: banuser())
+            search_button.grid(row=4, column=6, columnspan=2)
 
-            delete_button = tk.Button(top, text="Delete", command = deleteuser)
-            delete_button.grid(row=3, column=7)
+            delete_button = tk.Button(top, text="Delete", command = lambda: deleteuser())
+            delete_button.grid(row=4, column=7)
 
-            quit_button = tk.Button(top, text="Quit", command=lambda: quit(top))
-            quit_button.grid(row=1, column=8)
+            quit_button = tk.Button(top, width=12, text="Quit", command= lambda: quit(top))
+            quit_button.grid(row=1, column=8, padx=5, pady=5)
 
-            list = Listbox(top)
-            list.grid(row=4, column=5)
+            list = Listbox(top, height=17)
+            list.grid(row=6, column=3, columnspan=5, padx=20, pady=20, sticky='nsew')
 
             showuser()
+
 
 
 
@@ -681,7 +681,6 @@ if True:
             
             global guest_user
             guest_user = ""
-
             # destroy user / admin window 
             top.destroy()
             root.update()
@@ -808,7 +807,7 @@ if True:
 
                     # length of username cant exceed 15 characters
                     elif len(usern) > 15:
-                        messagebox.showinfo("Error", "Username cant be too long")
+                        messagebox.showinfo("Error", "Username cant exceed 15 characters")
                         reguser_entry.delete(0, tk.END)
 
                     # checks if username contain any special characters
@@ -818,7 +817,7 @@ if True:
 
                     # checks if the length of password is more then 10 characters
                     elif len(passw) > 10:
-                        messagebox.showinfo("Error", "Password cant be too long")
+                        messagebox.showinfo("Error", "Password cant exceed 10 characters")
                         regpass_entry.delete(0, tk.END)
 
                     # chesk if password contain any special characters
@@ -850,7 +849,7 @@ if True:
                         reguser_entry.delete(0, tk.END)
                         regpass_entry.delete(0, tk.END) 
                 except:
-                    print("There is an error")
+                    messagebox.showerror("Error", "There is an error on the code")
 
 
         reg_username = tk.StringVar()
@@ -892,7 +891,7 @@ if True:
 
 # Left Side
 if True:
-    left_frame = tk.Frame(root, height="600", width="400", padx=5, pady=5, bg="red")
+    left_frame = tk.Frame(root, height="600", width="400", padx=5, pady=5, bg="#132933")
     left_frame.configure(height=left_frame["height"],width=left_frame["width"])
     left_frame.grid_propagate(0)
 
@@ -1164,7 +1163,7 @@ if True:
 
     # top top left
     if True:
-        top_frame = tk.Frame(left_frame, height=35, width="400", padx=5, pady=5, bg="purple")
+        top_frame = tk.Frame(left_frame, height=35, width="400", padx=5, pady=5, bg="#132933")
         top_frame.configure(height=top_frame["height"],width=top_frame["width"])
         top_frame.grid_propagate(0)
 
@@ -1189,7 +1188,7 @@ if True:
 
     # Top left
     if True:
-        tl_frame = tk.LabelFrame(left_frame, text="Search", padx=5, pady=5, bg="blue")
+        tl_frame = tk.LabelFrame(left_frame, text="Search", padx=5, pady=5, bg="#132933")
 
         # Creating label for search bar
         searchLabel = tk.Label(tl_frame, text = "Search: ", font = ('Italic', 14), fg="dark blue")
@@ -1230,7 +1229,7 @@ if True:
 
     # Bottom left
     if True:
-        bl_frame = tk.LabelFrame(left_frame, text="Result", padx=5, pady=5, bg="blue")
+        bl_frame = tk.LabelFrame(left_frame, text="Result", padx=5, pady=5, bg="#132933")
         # Create listbox
         result_listbox = tk.Listbox(bl_frame, height=25, width=52)
         result_listbox.bind('<<ListboxSelect>>', lambda x: pick_from_list())
@@ -1259,7 +1258,7 @@ if True:
 
 # Right Side
 if True:
-    right_frame = tk.Frame(root, height="600", width="400", padx=5, pady=5, bg="black")
+    right_frame = tk.Frame(root, height="600", width="400", padx=5, pady=5, bg="#132933")
     right_frame.configure(height=right_frame["height"],width=right_frame["width"])
     right_frame.grid_propagate(0)
 
@@ -1268,10 +1267,25 @@ if True:
 
         #Music player
         def playSong():
-            pg.mixer.music.load(r"{}".format(selected_path))
-            pg.mixer.music.play(-1)
-            temp_name = entryText_name.get()
-            entryPlayingAudio.set("{}".format(temp_name))
+            print(selected_path)
+            try:
+                if type(selected_path) == str:
+                    pg.mixer.music.load(r"{}".format(selected_path))
+                    pg.mixer.music.play(-1)
+                    temp_name = entryText_name.get()
+                    entryPlayingAudio.set("{}".format(temp_name))
+                    
+                elif type(selected_path) == list:
+                    num_index = len(selected_path) - 1
+                    index = 0
+                    while index <= num_index:
+                        pg.mixer.music.load(r"{}".format(selected_path[index]))
+                        pg.mixer.music.play(-1)
+                        print(index)
+                        index +=1
+            except NameError:
+                print("No item (songs) selected yet")
+
         def pauseSong():
             pg.mixer.music.pause()
         def unpauseSong():
@@ -1539,8 +1553,8 @@ if True:
             myresult = mycursor.fetchall()
             path_list =[]
             for i in myresult:
-                print(i[1])
                 path_list.append(i[1])
+            print(path_list)
             global selected_path
             selected_path = path_list
             # for i in myresult:
@@ -1551,7 +1565,7 @@ if True:
 
     # #Top & Mid Right
     if True:
-        tr_frame = tk.Frame(right_frame, height=380, width=400, bg="purple")
+        tr_frame = tk.Frame(right_frame, height=380, width=400, bg="#132933")
         tr_frame.configure(height=tr_frame["height"],width=tr_frame["width"])
         tr_frame.grid_propagate(0)
 
@@ -1608,7 +1622,7 @@ if True:
 
         # Mid right
         if True:
-            mr_frame = tk.Frame(tr_frame, height=230, width=400, bg="brown")
+            mr_frame = tk.Frame(tr_frame, height=230, width=400, bg="#132933")
             mr_frame.configure(height=mr_frame["height"],width=mr_frame["width"])
             mr_frame.grid_propagate(0)
 
@@ -1675,16 +1689,16 @@ if True:
     # Bottom Right
     if True:
 
-        br_frame = tk.Frame(right_frame, height=220, width=400, bg="orange")
+        br_frame = tk.Frame(right_frame, height=220, width=400, bg="#132933")
         br_frame.configure(height=tr_frame["height"],width=tr_frame["width"])
         br_frame.grid_propagate(0)
 
         # Show music player
         if True:
             global br_in_frame1
-            br_in_frame1 = tk.LabelFrame(br_frame, text="Music Player", padx=5, pady=5, bg="green")
+            br_in_frame1 = tk.LabelFrame(br_frame, text="Music Player", padx=5, pady=5, bg="#132933")
 
-            playing_Label = tk.Label(br_in_frame1, text="Now Playing: ", bg="green")
+            playing_Label = tk.Label(br_in_frame1, text="Now Playing: ", bg="#132933")
             playing_Label.grid(row=0, column=0)
             global entryPlayingAudio
             entryPlayingAudio = tk.StringVar()
@@ -1708,7 +1722,7 @@ if True:
 
         # Show Playlist
         if True:
-            br_in_frame2 = tk.Frame(br_frame, height=220, width=130, bg="grey")
+            br_in_frame2 = tk.Frame(br_frame, height=220, width=130, bg="#132933")
             br_in_frame2.configure(height=br_in_frame2["height"],width=br_in_frame2["width"])
             br_in_frame2.grid_propagate(0)
 
