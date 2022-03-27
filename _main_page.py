@@ -110,21 +110,21 @@ if True:
             results = mycursor.fetchall()
 
             # display profile
-            for row in results:
-                # display profile
-                    path = "image/"+row[7]
-                    print(path)
-                    if os.path.exists(path):
-                        ini_img = Image.open(path)
-                        img = ImageTk.PhotoImage(ini_img.resize((150,150), Image.ANTIALIAS))
-                        label = tk.Label(profile, image = img)
-                        label.place(x=20, y=60)
-                        print(path)
-                    else:#display default profile if databse is none
-                        ini_img = Image.open("image/defaultprofile.jpg")
-                        img = ImageTk.PhotoImage(ini_img.resize((150,150), Image.ANTIALIAS))
-                        label = tk.Label(profile, image = img)
-                        label.place(x=20, y=60)
+            # for row in results:
+            #     # display profile
+            #         path = "image/"+row[7]
+            #         print(path)
+            #         if os.path.exists(path):
+            #             ini_img = Image.open(path)
+            #             img = ImageTk.PhotoImage(ini_img.resize((150,150), Image.ANTIALIAS))
+            #             label = tk.Label(profile, image = img)
+            #             label.place(x=20, y=60)
+            #             print(path)
+            #         else:#display default profile if databse is none
+            #             ini_img = Image.open("image/defaultprofile.jpg")
+            #             img = ImageTk.PhotoImage(ini_img.resize((150,150), Image.ANTIALIAS))
+            #             label = tk.Label(profile, image = img)
+            #             label.place(x=20, y=60)
 
 
             # ============================================= Upload Songs Function ============================================= #
@@ -269,6 +269,15 @@ if True:
 
                 Upload_audio()
 
+            # namtung code
+            # def viewownSong():
+
+            #     temp_name = guest_user
+            #     searchAudioQuery = "select a.audio_name from audio_tbl a, user_tbl u where (a.uid = u.uid) and username ='{}'".format(temp_name)
+            #     mycursor.execute(searchAudioQuery)
+            #     myresult = mycursor.fetchall()
+            #     print(myresult)
+
 
             # display other info 
             usertype = results[0][1]
@@ -282,7 +291,7 @@ if True:
                 uploadsong_button = tk.Button(profile, text="Upload Song", command=lambda: uploadSongs())#function here)
                 uploadsong_button.place(x=50, y=400)
 
-                viewownsong_button = tk.Button(profile, text="View Own Song", command=lambda:())#function here)
+                viewownsong_button = tk.Button(profile, text="View Own Song", command=lambda:viewownSong())#function here)
                 viewownsong_button.place(x=150, y=400)
 
                 createplaylist_button = tk.Button(profile, text="Create Playlist", command=lambda:())#function here)
@@ -1216,12 +1225,6 @@ if True:
         artist_chk.select()
         artist_chk.grid(row=2, column = 2)
 
-        # user_var = tk.IntVar()
-        # user_chk = tk.Checkbutton(tl_frame, text="User", variable=user_var)
-        # user_chk.select()
-        # user_chk.grid(row=2, column = 3)
-
-        #Get Checkbox value by
 
 
         tl_frame.grid(row=1, column=0)
@@ -1269,6 +1272,11 @@ if True:
         def playSong():
             print(selected_path)
             try:
+
+                # Clarence
+                if True:
+                    pass
+
                 if type(selected_path) == str:
                     pg.mixer.music.load(r"{}".format(selected_path))
                     pg.mixer.music.play(-1)
@@ -1651,8 +1659,6 @@ if True:
                 eatspace.grid(row=3, column=0)
 
                 tr_in_frame3.grid(row=0, column=0)
-
-                
 
 
             # Playlist from search
