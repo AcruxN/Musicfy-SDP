@@ -1290,23 +1290,61 @@ if True:
                 login_win()
             else:
                 temp_name = entryText_name.get()
-                print(temp_name)
-                # audio_id = 0
-                # userid = 0
-                # likeQuery = "Update like_tbl set like_status = '1' where aid =" + audio_id + " and uid =" + userid + "; "
-                # mycursor.execute(likeQuery)
-                # db.commit()
+                temp_artist = entryText_artist.get()
+                sql ="select a.aid from audio_tbl a, user_tbl u where u.username = '{}' and a.audio_name = '{}'".format(temp_artist, temp_name)
+                mycursor.execute(sql)
+                myresult = mycursor.fetchall()
+                for i in myresult:
+                    for j in i:
+                        aid = j
+                sql ="select uid from user_tbl where username = '{}'".format(guest_user)
+                mycursor.execute(sql)
+                myresult = mycursor.fetchall()
+                for i in myresult:
+                    for j in i:
+                        uid = j
+                likeQuery = "Update like_tbl set like_status = '1' where aid = '{}' and uid ='{}';".format(aid, uid)
+                mycursor.execute(likeQuery)
+                db.commit()
+
+                searchAudioQuery ="select sum(like_status) from like_tbl where aid = {}".format(aid)
+                mycursor.execute(searchAudioQuery)
+                myresult = mycursor.fetchall()
+                for i in myresult:
+                    for j in i:
+                        likenum = j
+                entryLikenum.set("{}".format(likenum))
                 
         
         def dislike_song():
             if guest_user=="":
                 login_win()
             else:
-                audio_id = 0
-                userid = 0
-                dislikeQuery = "Update like_tbl set like_status = '0' where aid =" + audio_id + " and uid =" + userid + "; "
+                temp_name = entryText_name.get()
+                temp_artist = entryText_artist.get()
+                sql ="select a.aid from audio_tbl a, user_tbl u where u.username = '{}' and a.audio_name = '{}'".format(temp_artist, temp_name)
+                mycursor.execute(sql)
+                myresult = mycursor.fetchall()
+                for i in myresult:
+                    for j in i:
+                        aid = j
+                sql ="select uid from user_tbl where username = '{}'".format(guest_user)
+                mycursor.execute(sql)
+                myresult = mycursor.fetchall()
+                for i in myresult:
+                    for j in i:
+                        uid = j
+                dislikeQuery = "Update like_tbl set like_status = '0' where aid = '{}' and uid ='{}';".format(aid, uid)
                 mycursor.execute(dislikeQuery)
                 db.commit()
+
+                searchAudioQuery ="select sum(like_status) from like_tbl where aid = {}".format(aid)
+                mycursor.execute(searchAudioQuery)
+                myresult = mycursor.fetchall()
+                for i in myresult:
+                    for j in i:
+                        likenum = j
+                entryLikenum.set("{}".format(likenum))
 
 
     # #Top & Mid Right
