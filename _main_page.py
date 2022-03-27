@@ -1487,17 +1487,12 @@ if True:
         def pick_selected_p():
 
             #playlist name
+            # maybe get both playlist owner also to get accurate playlist id, but hey, deadline. (if improve, use pid line1547)
             current_pl_name = selectedPlaylist_name.get()
 
             #selected_Listbox
             cs = selected_Listbox.curselection()
             song_in_playlist_now = selected_Listbox.get(cs)
-
-            # what you need
-            # entryText_name.set("{}".format(item_picked_playlist))
-            # entryText_artist.set("{}".format(artist_name))
-            # entryText_category.set("{}".format(categories))
-            # entryLikenum.set("{}".format(likenum))
 
             entryText_name.set("{}".format(song_in_playlist_now))
 
@@ -1539,16 +1534,20 @@ if True:
                     likenum = j
             entryLikenum.set("{}".format(likenum))
 
-            # path of the playlist
-            # get path, index
-
-            searchAudioQuery ="select audio_path from audio_tbl where aid = {}".format(item_id)
+            searchAudioQuery ="select a.audio_name, a.audio_path from playlist_tbl p, song_in_playlist s, audio_tbl a where ((p.pid = s.pid) and (a.aid = s.aid)) and p.playlist_name = '{}'".format(current_pl_name)
             mycursor.execute(searchAudioQuery)
             myresult = mycursor.fetchall()
+            path_list =[]
             for i in myresult:
-                for j in i:
-                    global selected_path
-                    selected_path = j
+                print(i[1])
+                path_list.append(i[1])
+            global selected_path
+            selected_path = path_list
+            # for i in myresult:
+            #     for j in i:
+            #         global selected_path
+            #         selected_path = j
+            #         print(selected_path)
 
     # #Top & Mid Right
     if True:
