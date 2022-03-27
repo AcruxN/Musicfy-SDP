@@ -79,6 +79,8 @@ if True:
             top = Toplevel()
             top.geometry("500x500")
             top.title("User Page")
+            global guest_user
+            guest_user = username
 
             # to declare first frame
             profile = tk.Frame(top)
@@ -526,6 +528,8 @@ if True:
             top = Toplevel()
             top.geometry("500x500")
             top.title("Admin Page")
+            global guest_user
+            guest_user = username
 
             # ============================================= Update Listbox =============================================
             def update(data):
@@ -674,6 +678,9 @@ if True:
 
 
         def quit(top):
+            
+            global guest_user
+            guest_user = ""
 
             # destroy user / admin window 
             top.destroy()
@@ -1172,7 +1179,7 @@ if True:
         def check_username(guest_user):
             if guest_user == "":
                 login_win()
-                print(guest_user+"<-username printed")
+                
             else:
                 print(guest_user)
 
@@ -1278,6 +1285,30 @@ if True:
         def stopSong():
             pg.mixer.music.stop()
 
+        def like_song():
+            if guest_user=="":
+                login_win()
+            else:
+                temp_name = entryText_name.get()
+                print(temp_name)
+                # audio_id = 0
+                # userid = 0
+                # likeQuery = "Update like_tbl set like_status = '1' where aid =" + audio_id + " and uid =" + userid + "; "
+                # mycursor.execute(likeQuery)
+                # db.commit()
+                
+        
+        def dislike_song():
+            if guest_user=="":
+                login_win()
+            else:
+                audio_id = 0
+                userid = 0
+                dislikeQuery = "Update like_tbl set like_status = '0' where aid =" + audio_id + " and uid =" + userid + "; "
+                mycursor.execute(dislikeQuery)
+                db.commit()
+
+
     # #Top & Mid Right
     if True:
         tr_frame = tk.Frame(right_frame, height=380, width=400, bg="purple")
@@ -1323,9 +1354,9 @@ if True:
             addtoPlaylist_Button = tk.Button(tr_in_frame3, text = "Add To Playlist", padx=20)
             addtoPlaylist_Button.grid(row=0, column=0, padx=20)
 
-            like_Button = tk.Button(tr_in_frame3, text = "Like", padx=10)
+            like_Button = tk.Button(tr_in_frame3, text = "Like", padx=10, command = like_song)
             like_Button.grid(row=0, column=1)
-            dislike_Button = tk.Button(tr_in_frame3, text = "Disike", padx=10)
+            dislike_Button = tk.Button(tr_in_frame3, text = "Disike", padx=10, command = dislike_song)
             dislike_Button.grid(row=0, column=2)
 
             global entryLikenum
