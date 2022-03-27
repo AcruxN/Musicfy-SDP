@@ -5,7 +5,7 @@ import os
 from pathlib import Path
 import shutil
 from PIL import ImageTk, Image
-from tkinter import StringVar, filedialog
+from tkinter import DISABLED, StringVar, filedialog
 from queue import Empty
 from select import select
 from telnetlib import STATUS
@@ -74,6 +74,7 @@ if True:
 
 
         # ===================================== User Main =======================================
+        global user
         def user(username):
             login.withdraw()
             top = Toplevel()
@@ -270,13 +271,49 @@ if True:
                 Upload_audio()
 
             # namtung code
-            # def viewownSong():
+            def viewownSong():
+                
+                temp_name = guest_user
 
-            #     temp_name = guest_user
-            #     searchAudioQuery = "select a.audio_name from audio_tbl a, user_tbl u where (a.uid = u.uid) and username ='{}'".format(temp_name)
-            #     mycursor.execute(searchAudioQuery)
-            #     myresult = mycursor.fetchall()
-            #     print(myresult)
+                def check_own_like():
+                    cs = own_Listbox.curselection()
+                    temp_own_pick = own_Listbox.get(cs)
+                    searchAudioQuery ="select sum(l.like_status) from like_tbl l, audio_tbl a, user_tbl u where (a.aid = l.aid) and (a.uid = u.uid) and audio_name = '{}' and u.username = '{}'".format(temp_own_pick, temp_name)
+                    mycursor.execute(searchAudioQuery)
+                    myresult = mycursor.fetchall()
+                    print(myresult)
+                    for i in myresult:
+                        for j in i:
+                            likenum = j
+                    likeOwnnum.set("{}".format(likenum)) 
+
+                searchAudioQuery = "select a.audio_name from audio_tbl a, user_tbl u where (a.uid = u.uid) and username ='{}'".format(temp_name)
+                mycursor.execute(searchAudioQuery)
+                myresult = mycursor.fetchall()
+                print(myresult)
+
+                ownsong = Toplevel()
+                ownsong.geometry("500x500")
+                ownsong.title("My Published Song")
+                if True:
+                    own_Listbox = tk.Listbox(ownsong, height=10, width=20)
+                    own_Listbox.bind('<<ListboxSelect>>', lambda x: check_own_like())
+                    own_Listbox.grid(row=0,column=0)
+
+                    own_label = tk.Label(ownsong, text = "Number of likes: ")
+                    own_label.grid(row=1, column=0)
+
+                    likeOwnnum = tk.StringVar()
+                    likeentry = tk.Entry(ownsong, state=DISABLED, textvariable=likeOwnnum)
+                    likeentry.grid(row=2, column=0)
+
+                    own_Listbox.delete(0,"end")
+                    for j in myresult:
+                        for i in j:
+                            own_Listbox.insert('end', i)
+                    own_Listbox.grid(row=0,column=0)
+
+
 
 
             # display other info 
@@ -1186,7 +1223,7 @@ if True:
                 login_win()
                 
             else:
-                print(guest_user)
+                user(guest_user)
 
         def quit():
 
