@@ -1052,7 +1052,6 @@ if True:
         def pick_from_list():
             # Get selection from listbox
             cs = result_listbox.curselection()
-            global item_picked
             item_picked = result_listbox.get(cs)
 
             # If song selected from search
@@ -1095,8 +1094,6 @@ if True:
                         global selected_path
                         selected_path = j
                 
-                print(search_result)
-                likenum = "nothing"
 
                 searchAudioQuery ="select sum(like_status) from like_tbl where aid = {}".format(item_id)
                 mycursor.execute(searchAudioQuery)
@@ -1272,8 +1269,9 @@ if True:
         #Music player
         def playSong():
             pg.mixer.music.load(r"{}".format(selected_path))
-            pg.mixer.music.play(loops=0)
-            entryPlayingAudio.set("{}".format(item_picked))
+            pg.mixer.music.play(-1)
+            temp_name = entryText_name.get()
+            entryPlayingAudio.set("{}".format(temp_name))
         def pauseSong():
             pg.mixer.music.pause()
         def unpauseSong():
@@ -1303,7 +1301,7 @@ if True:
                 for i in myresult:
                     for j in i:
                         uid = j
-                likeQuery = "Update like_tbl set like_status = '1' where aid = '{}' and uid ='{}';".format(aid, uid)
+                likeQuery = "Update like_tbl set like_status = '1' where aid = '{}' and uid ='{}' ".format(aid, uid)
                 mycursor.execute(likeQuery)
                 db.commit()
 
@@ -1334,7 +1332,7 @@ if True:
                 for i in myresult:
                     for j in i:
                         uid = j
-                dislikeQuery = "Update like_tbl set like_status = '0' where aid = '{}' and uid ='{}';".format(aid, uid)
+                dislikeQuery = "Update like_tbl set like_status = '0'  where aid = '{}' and uid ='{}' ".format(aid, uid)
                 mycursor.execute(dislikeQuery)
                 db.commit()
 
@@ -1412,10 +1410,114 @@ if True:
 
 
             def pick_artist():
-                pass
+                cs = artist_Listbox.curselection()
+                item_picked_artist = artist_Listbox.get(cs)
+
+                entryText_name.set("{}".format(item_picked_artist))
+                
+                searchAudioQuery ="select aid, audio_name, uid, audio_path from audio_tbl where audio_name like" + "'%" + item_picked_artist + "%';"
+                mycursor.execute(searchAudioQuery)
+                myresult = mycursor.fetchall()
+                #Artist of the song (uploader)
+                for i in myresult:
+                    if i[1] == item_picked_artist:
+                        item_id = i[0]
+                        item_artist_id = i[2]
+
+                
+                searchAudioQuery ="select username from user_tbl where uid = {}".format(item_artist_id)
+                mycursor.execute(searchAudioQuery)
+                myresult = mycursor.fetchall()
+                for i in myresult:
+                    for j in i:
+                        artist_name = j
+                entryText_artist.set("{}".format(artist_name))
+
+                searchAudioQuery ="select category_name from category_tbl, song_in_category where (song_in_category.cid = category_tbl.cid) and song_in_category.aid = {}".format(item_id)
+                mycursor.execute(searchAudioQuery)
+                myresult = mycursor.fetchall()
+                categories = ""
+                for i in myresult:
+                    for j in i:
+                        if categories != "":
+                            categories =categories +", " + str(j)
+                        else:
+                            categories = str(j)
+                entryText_category.set("{}".format(categories))
+
+                # path of the song
+                searchAudioQuery ="select audio_path from audio_tbl where aid = {}".format(item_id)
+                mycursor.execute(searchAudioQuery)
+                myresult = mycursor.fetchall()
+                for i in myresult:
+                    for j in i:
+                        global selected_path
+                        selected_path = j
+                
+                searchAudioQuery ="select sum(like_status) from like_tbl where aid = {}".format(item_id)
+                mycursor.execute(searchAudioQuery)
+                myresult = mycursor.fetchall()
+                for i in myresult:
+                    for j in i:
+                        likenum = j
+                entryLikenum.set("{}".format(likenum))
+                
+
             def pick_playlist():
-                pass
+                cs = playlist_Listbox.curselection()
+                item_picked_playlist = playlist_Listbox.get(cs)
+
+                entryText_name.set("{}".format(item_picked_playlist))
+
+                searchAudioQuery ="select aid, audio_name, uid, audio_path from audio_tbl where audio_name like" + "'%" + item_picked_playlist + "%';"
+                mycursor.execute(searchAudioQuery)
+                myresult = mycursor.fetchall()
+                #Artist of the song (uploader)
+                for i in myresult:
+                    if i[1] == item_picked_playlist:
+                        item_id = i[0]
+                        item_artist_id = i[2]
+
+                
+                searchAudioQuery ="select username from user_tbl where uid = {}".format(item_artist_id)
+                mycursor.execute(searchAudioQuery)
+                myresult = mycursor.fetchall()
+                for i in myresult:
+                    for j in i:
+                        artist_name = j
+                entryText_artist.set("{}".format(artist_name))
+
+                searchAudioQuery ="select category_name from category_tbl, song_in_category where (song_in_category.cid = category_tbl.cid) and song_in_category.aid = {}".format(item_id)
+                mycursor.execute(searchAudioQuery)
+                myresult = mycursor.fetchall()
+                categories = ""
+                for i in myresult:
+                    for j in i:
+                        if categories != "":
+                            categories =categories +", " + str(j)
+                        else:
+                            categories = str(j)
+                entryText_category.set("{}".format(categories))
+
+                # path of the song
+                searchAudioQuery ="select audio_path from audio_tbl where aid = {}".format(item_id)
+                mycursor.execute(searchAudioQuery)
+                myresult = mycursor.fetchall()
+                for i in myresult:
+                    for j in i:
+                        global selected_path
+                        selected_path = j
+                
+                searchAudioQuery ="select sum(like_status) from like_tbl where aid = {}".format(item_id)
+                mycursor.execute(searchAudioQuery)
+                myresult = mycursor.fetchall()
+                for i in myresult:
+                    for j in i:
+                        likenum = j
+                entryLikenum.set("{}".format(likenum))
             
+
+
             # Artist from search
             if True:
                 tr_in_frame3 = tk.LabelFrame(mr_frame, text="Artist Details", padx=5, pady=5)
