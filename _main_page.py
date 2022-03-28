@@ -59,7 +59,7 @@ if True:
         login_left_frame = tk.Frame(login, width=500, height=500, bg='#132933') 
         login_left_frame.grid()
 
-        my_img = ImageTk.PhotoImage(Image.open("img\music logo design.png"))
+        my_img = ImageTk.PhotoImage(Image.open("image_files\music logo design.png"))
         img_label = tk.Label(login_left_frame, image= my_img, borderwidth=0, highlightthickness=0)
         img_label.grid()
 
@@ -321,10 +321,15 @@ if True:
                         own_Listbox.insert('end', i)
                 own_Listbox.grid(row=0,column=0)
 
-            def createownPlaylsit():
+            def manageownPlaylsit():
 
+                # new window
+                cpl = Toplevel()
+                cpl.geometry("500x500")
+                cpl.title("My Playlist")
+
+                # get username
                 temp_name = guest_user
-
                 #get uid with username 
                 searchQuery = "select uid from user_tbl where username = '{}'".format(temp_name)
                 mycursor.execute(searchQuery)
@@ -333,50 +338,178 @@ if True:
                     for j in i:
                         uid = j
 
-                # verify playlist no exist, if suc then insert
-                def createpl():
-                    execute_cr = False
-                    listex = []
-                    varplname = entered_name.get()
+                upframecp = tk.Frame(cpl, height="250", width="500", padx=5, pady=5, bg="#132933")
+                upframecp.configure(height=upframecp["height"],width=upframecp["width"])
+                upframecp.grid_propagate(0)
+                # View own playlist and its song
+                if True:
 
-                    if len(varplname) <= 3:
-                        messagebox.showinfo("Error", "Playlist name cannot be too short!")
-                    elif len(varplname) >= 50:
-                        messagebox.showinfo("Error", "Playlist name cannot be too long!")
-                    else:
-                        # search existing playlist
-                        searchQuery = "select p.playlist_name from playlist_tbl p"
+                    def dissam():
+                        cs = samlistbox.curselection()
+                        plsam = samlistbox.get(cs)
+
+                        global pickkplname
+                        pickkplname = plsam
+
+                        searchQuery = "select a.audio_name from audio_tbl a, playlist_tbl p, song_in_playlist s where (p.pid = s.pid) and (a.aid = s.aid) and playlist_name = '{}'".format(plsam)
                         mycursor.execute(searchQuery)
                         myresult = mycursor.fetchall()
-                        print(myresult)
+                        listsg = []
                         for i in myresult:
                             for j in i:
-                                listex.append(j)
-                        if varplname not in listex:
-                            execute_cr = True
+                                listsg.append(j)
+                        
+                        sam2listbox.delete(0,"end")
+                        for i in listsg:
+                            sam2listbox.insert("end", i)
+                        sam2listbox.grid(row=1, column=1)
+
+                        # remove song selected from previous playlist
+                        varsg.set('')
+
+                    lblabel = tk.Label(upframecp, text = "Your playlist")
+                    lblabel.grid(row=0, column = 0)
+
+                    samlistbox = tk.Listbox(upframecp, height=25, width=40)
+                    samlistbox.bind('<<ListboxSelect>>', lambda x: dissam())
+                    samlistbox.grid(row=1, column=0) 
+
+                    # fill in playlist name in listbox
+                    if True:
+                        query = "select playlist_name from playlist_tbl where uid = '{}'".format(uid)
+                        mycursor.execute(query)
+                        myresult = mycursor.fetchall()
+                        listpl = []
+                        for i in myresult:
+                            for j in i:
+                                listpl.append(j)
+                        
+                        samlistbox.delete(0,"end")
+                        for playname in listpl:
+                            samlistbox.insert('end', playname)
+                        samlistbox.grid(row=1,column=0)
+                
+
+
+                    def dissam2():
+                        cs = sam2listbox.curselection()
+                        plsam2 = sam2listbox.get(cs)
+
+                        varsg.set('{}'.format(plsam2))
+                    
+                    lb2label = tk.Label(upframecp, text ="Songs in playlist")
+                    lb2label.grid(row=0, column=1)
+
+                    sam2listbox = tk.Listbox(upframecp, height=25, width=40)
+                    sam2listbox.bind('<<ListboxSelect>>', lambda x: dissam2())
+                    sam2listbox.grid(row=1,column=1) 
+
+                upframecp.grid()
+
+
+                downframecp = tk.Frame(cpl, height="250", width="500", padx=5, pady=5, bg="red")
+                downframecp.configure(height=downframecp["height"],width=downframecp["width"])
+                downframecp.grid_propagate(0)
+                if True:
+                    # verify playlist no exist, if suc then insert
+                    def createpl():
+                        execute_cr = False
+                        listex = []
+                        varplname = entered_name.get()
+
+                        if len(varplname) <= 3:
+                            messagebox.showinfo("Error", "Playlist name cannot be too short!")
+                        elif len(varplname) >= 50:
+                            messagebox.showinfo("Error", "Playlist name cannot be too long!")
                         else:
-                            messagebox.showinfo("Error", "Playlist exist!")
+                            # search existing playlist
+                            searchQuery = "select p.playlist_name from playlist_tbl p"
+                            mycursor.execute(searchQuery)
+                            myresult = mycursor.fetchall()
+                            print(myresult)
+                            for i in myresult:
+                                for j in i:
+                                    listex.append(j)
+                            if varplname not in listex:
+                                execute_cr = True
+                            else:
+                                messagebox.showinfo("Error", "Playlist exist!")
 
-                    if execute_cr:
-                        insertnewplaylist = "insert into `playlist_tbl` (uid, playlist_name) values ('{}','{}');".format(uid, varplname)
-                        mycursor.execute(insertnewplaylist)
+                        if execute_cr:
+                            insertnewplaylist = "insert into `playlist_tbl` (uid, playlist_name) values ('{}','{}');".format(uid, varplname)
+                            mycursor.execute(insertnewplaylist)
+                            db.commit()
+                            messagebox.showinfo("Error", "Playlist Created!")
+
+                            #refresh
+                            query = "select playlist_name from playlist_tbl where uid = '{}'".format(uid)
+                            mycursor.execute(query)
+                            myresult = mycursor.fetchall()
+                            listpl = []
+                            for i in myresult:
+                                for j in i:
+                                    listpl.append(j)
+                            
+                            samlistbox.delete(0,"end")
+                            for playname in listpl:
+                                samlistbox.insert('end', playname)
+                            samlistbox.grid(row=1,column=0)
+
+                    
+                    def remol():
+
+                        plsam = pickkplname
+                        query = "select pid from playlist_tbl where playlist_name = '{}';".format(plsam)
+                        mycursor.execute(query)
+                        myresult = mycursor.fetchall()
+                        for i in myresult:
+                            for j in i:
+                                pid = j
+                        
+
+                        remolsgname = entrysg.get()
+                        query = "select aid from audio_tbl where audio_name = '{}';".format(remolsgname)
+                        mycursor.execute(query)
+                        myresult = mycursor.fetchall()
+                        for i in myresult:
+                            for j in i:
+                                aid = j
+                        
+                        remolsong = "delete from song_in_playlist where pid = '{}' and aid = '{}';".format(pid, aid)
+                        mycursor.execute(remolsong)
                         db.commit()
-                        messagebox.showinfo("Error", "Playlist Created!")
+                    
+                    # for delete song from playlist
+                    labelsg = tk.Label(downframecp, text = "Song selected :")
+                    labelsg.grid(row=0, column= 0)
 
-                cpl = Toplevel()
-                cpl.geometry("500x500")
-                cpl.title("My Published Song")
+                    global varsg
+                    varsg = tk.StringVar()
+                    entrysg = tk.Entry(downframecp, textvariable=varsg, state=DISABLED)
+                    entrysg.grid(row=1, column= 0)
+
+                    buttonsg = tk.Button(downframecp, text="Remove from playlist", command=remol)
+                    buttonsg.grid(row=2, column= 0)
+
+                    # for create new playlsit
+                    elabel = tk.Label(downframecp, text= 'New Playlist Name: ')
+                    elabel.grid(row=0, column= 1)
+
+                    entered_name = tk.StringVar()
+                    entrynew = tk.Entry(downframecp, textvariable=entered_name)
+                    entrynew.grid(row=1, column =1)
+
+                    create_button = tk.Button(downframecp, text="Create", command=createpl)
+                    create_button.grid(row = 2, column = 1)
+
+                downframecp.grid()
+                #Create new playlist
 
                 
-                elabel = tk.Label(cpl, text= 'New Playlist Name: ')
-                elabel.grid()
 
-                entered_name = tk.StringVar()
-                entrynew = tk.Entry(cpl, textvariable=entered_name)
-                entrynew.grid()
 
-                create_button = tk.Button(cpl, text="Create", command=createpl)
-                create_button.grid()
+
+
 
             # display other info 
             usertype = results[0][1]
@@ -393,11 +526,9 @@ if True:
                 viewownsong_button = tk.Button(profile, text="View Own Song", command=lambda:viewownSong())#function here)
                 viewownsong_button.place(x=150, y=400)
 
-                createplaylist_button = tk.Button(profile, text="Create Playlist", command=lambda:createownPlaylsit())#function here)
-                createplaylist_button.place(x=265, y=400)
+                manageplaylist_button = tk.Button(profile, text="Manage Playlist", command=lambda:manageownPlaylsit())#function here)
+                manageplaylist_button.place(x=265, y=400)
 
-                viewplaylist_button =tk.Button(profile, text="View Playlist", command=lambda:())#function here)
-                viewplaylist_button.place(x=370, y=400)
 
             def changetoartist():
                 # change the user type database from listener to artist
@@ -410,11 +541,8 @@ if True:
 
 
             if usertype == "listener":
-                createplaylist_button = tk.Button(profile, text="Create Playlist", command=lambda:createownPlaylsit())#function here)
-                createplaylist_button.place(x=70, y=400)
-
-                viewplaylist_button =tk.Button(profile, text="View Playlist", command=lambda:())#function here)
-                viewplaylist_button.place(x=220, y=400)
+                manageplaylist_button = tk.Button(profile, text="Manage Playlist", command=lambda:manageownPlaylsit())#function here)
+                manageplaylist_button.place(x=70, y=400)
 
                 changetoartist_button =tk.Button(profile, text="Become an Artist", command=lambda:changetoartist())#function here)
                 changetoartist_button.place(x=350, y=400)
