@@ -176,8 +176,8 @@ if True:
             c = artist_var.get()
             a = user_var.get()
             print(y,m,c,a)
-        checkbooo = tk.Button(tl_frame, text="check", command=show)
-        checkbooo.grid()
+        # checkbooo = tk.Button(tl_frame, text="check", command=show)
+        # checkbooo.grid()
 
         tl_frame.grid(row=0, column=0)
 
@@ -202,6 +202,7 @@ if True:
         # select_button = tk.Button(bl_frame, text="Select", command= pick_from_list)
         # select_button.grid(row=1, column=1)
 
+        
 
         bl_frame.grid(row=1, column=0)
 
