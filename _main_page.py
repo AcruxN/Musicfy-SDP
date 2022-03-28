@@ -275,9 +275,13 @@ if True:
                 
                 temp_name = guest_user
 
+                # function for select stuff in listbox
                 def check_own_like():
+                    # get what is clicked on the listbox
                     cs = own_Listbox.curselection()
                     temp_own_pick = own_Listbox.get(cs)
+
+                    # use data to sql 
                     searchAudioQuery ="select sum(l.like_status) from like_tbl l, audio_tbl a, user_tbl u where (a.aid = l.aid) and (a.uid = u.uid) and audio_name = '{}' and u.username = '{}'".format(temp_own_pick, temp_name)
                     mycursor.execute(searchAudioQuery)
                     myresult = mycursor.fetchall()
@@ -285,6 +289,7 @@ if True:
                     for i in myresult:
                         for j in i:
                             likenum = j
+                    # set the entry value
                     likeOwnnum.set("{}".format(likenum)) 
 
                 searchAudioQuery = "select a.audio_name from audio_tbl a, user_tbl u where (a.uid = u.uid) and username ='{}'".format(temp_name)
@@ -295,6 +300,8 @@ if True:
                 ownsong = Toplevel()
                 ownsong.geometry("500x500")
                 ownsong.title("My Published Song")
+
+                # DISPLAY
                 if True:
                     own_Listbox = tk.Listbox(ownsong, height=10, width=20)
                     own_Listbox.bind('<<ListboxSelect>>', lambda x: check_own_like())
@@ -304,17 +311,72 @@ if True:
                     own_label.grid(row=1, column=0)
 
                     likeOwnnum = tk.StringVar()
-                    likeentry = tk.Entry(ownsong, state=DISABLED, textvariable=likeOwnnum)
+                    likeentry = tk.Entry(ownsong, state=DISABLED, textvariable=likeOwnnum, justify=tk.CENTER)
                     likeentry.grid(row=2, column=0)
 
-                    own_Listbox.delete(0,"end")
-                    for j in myresult:
-                        for i in j:
-                            own_Listbox.insert('end', i)
-                    own_Listbox.grid(row=0,column=0)
+                # Put things into listbox
+                own_Listbox.delete(0,"end")
+                for j in myresult:
+                    for i in j:
+                        own_Listbox.insert('end', i)
+                own_Listbox.grid(row=0,column=0)
 
+            def createownPlaylsit():
 
+                temp_name = guest_user
 
+                #get uid with username 
+                searchQuery = "select uid from user_tbl where username = '{}'".format(temp_name)
+                mycursor.execute(searchQuery)
+                myresult = mycursor.fetchall()
+                for i in myresult:
+                    for j in i:
+                        uid = j
+
+                # verify playlist no exist, if suc then insert
+                def createpl():
+                    execute_cr = False
+                    listex = []
+                    varplname = entered_name.get()
+
+                    if len(varplname) <= 3:
+                        messagebox.showinfo("Error", "Playlist name cannot be too short!")
+                    elif len(varplname) >= 50:
+                        messagebox.showinfo("Error", "Playlist name cannot be too long!")
+                    else:
+                        # search existing playlist
+                        searchQuery = "select p.playlist_name from playlist_tbl p"
+                        mycursor.execute(searchQuery)
+                        myresult = mycursor.fetchall()
+                        print(myresult)
+                        for i in myresult:
+                            for j in i:
+                                listex.append(j)
+                        if varplname not in listex:
+                            execute_cr = True
+                        else:
+                            messagebox.showinfo("Error", "Playlist exist!")
+
+                    if execute_cr:
+                        insertnewplaylist = "insert into `playlist_tbl` (uid, playlist_name) values ('{}','{}');".format(uid, varplname)
+                        mycursor.execute(insertnewplaylist)
+                        db.commit()
+                        messagebox.showinfo("Error", "Playlist Created!")
+
+                cpl = Toplevel()
+                cpl.geometry("500x500")
+                cpl.title("My Published Song")
+
+                
+                elabel = tk.Label(cpl, text= 'New Playlist Name: ')
+                elabel.grid()
+
+                entered_name = tk.StringVar()
+                entrynew = tk.Entry(cpl, textvariable=entered_name)
+                entrynew.grid()
+
+                create_button = tk.Button(cpl, text="Create", command=createpl)
+                create_button.grid()
 
             # display other info 
             usertype = results[0][1]
@@ -331,7 +393,7 @@ if True:
                 viewownsong_button = tk.Button(profile, text="View Own Song", command=lambda:viewownSong())#function here)
                 viewownsong_button.place(x=150, y=400)
 
-                createplaylist_button = tk.Button(profile, text="Create Playlist", command=lambda:())#function here)
+                createplaylist_button = tk.Button(profile, text="Create Playlist", command=lambda:createownPlaylsit())#function here)
                 createplaylist_button.place(x=265, y=400)
 
                 viewplaylist_button =tk.Button(profile, text="View Playlist", command=lambda:())#function here)
@@ -348,7 +410,7 @@ if True:
 
 
             if usertype == "listener":
-                createplaylist_button = tk.Button(profile, text="Create Playlist", command=lambda:())#function here)
+                createplaylist_button = tk.Button(profile, text="Create Playlist", command=lambda:createownPlaylsit())#function here)
                 createplaylist_button.place(x=70, y=400)
 
                 viewplaylist_button =tk.Button(profile, text="View Playlist", command=lambda:())#function here)
@@ -1307,27 +1369,93 @@ if True:
 
         #Music player
         def playSong():
-            print(selected_path)
             try:
 
                 # Clarence
                 if True:
                     pass
-
+                
+                # if play a single song
                 if type(selected_path) == str:
                     pg.mixer.music.load(r"{}".format(selected_path))
                     pg.mixer.music.play(-1)
                     temp_name = entryText_name.get()
                     entryPlayingAudio.set("{}".format(temp_name))
-                    
+                
+                #if play a playlist
                 elif type(selected_path) == list:
-                    num_index = len(selected_path) - 1
-                    index = 0
-                    while index <= num_index:
+                    try:
+                        temp_name = selectedPlaylist_name.get()
+                        entryPlayingAudio.set("{}".format(temp_name))
+
+                        sql ="select audio_path from audio_tbl where audio_name = '{}';".format(song_in_playlist_now)
+                        mycursor.execute(sql)
+                        myresult = mycursor.fetchall()
+                        for i in myresult:
+                            for j in i:
+                                song_path_now = j
+
+                        index = selected_path.index(song_path_now)
+                        
+                        # load selected music
                         pg.mixer.music.load(r"{}".format(selected_path[index]))
-                        pg.mixer.music.play(-1)
-                        print(index)
-                        index +=1
+
+                        # remove current, previous from list
+                        z = 0
+                        while z <= index:
+                            selected_path.pop(0)
+                            z += 1
+                        
+                        # play selected
+                        pg.mixer.music.play()
+
+                        # load second song
+                        pg.mixer.music.queue(selected_path[0])
+                        selected_path.pop(0)
+
+                        # set event occur after end of song
+                        pg.mixer.music.set_endevent(pg.USEREVENT)
+
+                        # play whole playlist
+                        running = True
+                        while running:
+                            # checking if any event has been
+                            # hosted at time of playing
+                            for event in pg.event.get():
+                                
+                                # A event will be hosted
+                                # after the end of every song
+                                if event.type == pg.USEREVENT:
+                                    print('Song Finished')
+                                    
+                                    # Checking our playList
+                                    # that if any song exist or
+                                    # it is empty
+                                    if len(selected_path) > 0:
+                                        
+                                        # if song available then load it in player
+                                        # and remove from the player
+                                        pg.mixer.music.queue(selected_path[0])
+                                        selected_path.pop(0)
+                                # Checking whether the 
+                                # player is still playing any song
+                                # if yes it will return true and false otherwise
+                                if not pg.mixer.music.get_busy():
+                                    print("Playlist completed")
+                                    
+                                    # When the playlist has
+                                    # completed playing successfully
+                                    # we'll go out of the
+                                    # while-loop by using break
+                                    running = False
+                                    break
+                    except:
+                        # it will have pygame video not initialist error, but we didnt use that so ..
+                        # plus if import all from pygame it will bug
+                        pass
+
+
+
             except NameError:
                 print("No item (songs) selected yet")
 
@@ -1551,6 +1679,7 @@ if True:
 
             #selected_Listbox
             cs = selected_Listbox.curselection()
+            global song_in_playlist_now
             song_in_playlist_now = selected_Listbox.get(cs)
 
             entryText_name.set("{}".format(song_in_playlist_now))
@@ -1599,14 +1728,9 @@ if True:
             path_list =[]
             for i in myresult:
                 path_list.append(i[1])
-            print(path_list)
+            # print(path_list)
             global selected_path
             selected_path = path_list
-            # for i in myresult:
-            #     for j in i:
-            #         global selected_path
-            #         selected_path = j
-            #         print(selected_path)
 
     # #Top & Mid Right
     if True:
