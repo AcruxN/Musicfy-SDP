@@ -272,8 +272,12 @@ if True:
                 # function for select stuff in listbox
                 def check_own_like():
                     # get what is clicked on the listbox
-                    cs = own_Listbox.curselection()
-                    temp_own_pick = own_Listbox.get(cs)
+                    try:
+                        cs = own_Listbox.curselection()
+                        temp_own_pick = own_Listbox.get(cs)
+                    except (UnboundLocalError, tk.TclError) as Error:
+                        pass
+
 
                     # use data to sql 
                     searchAudioQuery ="select sum(l.like_status) from like_tbl l, audio_tbl a, user_tbl u where (a.aid = l.aid) and (a.uid = u.uid) and audio_name = '{}' and u.username = '{}'".format(temp_own_pick, temp_name)
@@ -291,37 +295,56 @@ if True:
                 myresult = mycursor.fetchall()
                 print(myresult)
 
+                # ================================================================================ #
+                top.withdraw()
                 ownsong = Toplevel()
-                ownsong.geometry("500x500")
                 ownsong.title("My Published Song")
+                ownsong.geometry("300x300")
+                # ownsong.resizable(height=False, width=False)
+                ownsong.configure(bg='#132933')
 
                 # DISPLAY
                 if True:
-                    own_Listbox = tk.Listbox(ownsong, height=10, width=20)
-                    own_Listbox.bind('<<ListboxSelect>>', lambda x: check_own_like())
-                    own_Listbox.grid(row=0,column=0)
+                    ownsongLabel = tk.Label(ownsong, text="List of Own Songs", fg="white", bg="#132933", font=("Calibri", 15, "bold"))
+                    ownsongLabel.place(x=60, y=3)
 
-                    own_label = tk.Label(ownsong, text = "Number of likes: ")
-                    own_label.grid(row=1, column=0)
+                    own_Listbox = tk.Listbox(ownsong, height=10, width=30)
+                    own_Listbox.bind('<<ListboxSelect>>', lambda x: check_own_like())
+                    own_Listbox.place(x=50, y=45)
+
+                    own_label = tk.Label(ownsong, text = "Number of likes: ", fg="white", bg="#132933", font=("Calibri", 12, "bold"))
+                    own_label.place(x=60, y=220)
 
                     likeOwnnum = tk.StringVar()
-                    likeentry = tk.Entry(ownsong, state=DISABLED, textvariable=likeOwnnum, justify=tk.CENTER)
-                    likeentry.grid(row=2, column=0)
+                    likeentry = tk.Entry(ownsong, width=5, state=DISABLED, textvariable=likeOwnnum, justify=tk.CENTER)
+                    likeentry.place(x=180, y=222)
+
+                    ownsongButton = tk.Button(ownsong, text="Back", command=lambda: backButton())
+                    ownsongButton.place(x=180, y=250)
+
+                    def backButton():
+                        ownsong.destroy()
+                        top.update()
+                        top.deiconify()
 
                 # Put things into listbox
                 own_Listbox.delete(0,"end")
                 for j in myresult:
                     for i in j:
                         own_Listbox.insert('end', i)
-                own_Listbox.grid(row=0,column=0)
+                own_Listbox.grid(x=25, y=15)
 
+            # ============================================= Manage Own Playlist Function ============================================= #
+            # namtung code
             def manageownPlaylsit():
                 
                 tobeadded = entryText_name.get()
                 # new window
+                top.withdraw()
                 cpl = Toplevel()
-                cpl.geometry("500x500")
+                cpl.geometry("500x400")
                 cpl.title("My Playlist")
+                # cpl.resizable(height=False, width=False)
 
                 # get username
                 temp_name = guest_user
@@ -340,8 +363,11 @@ if True:
                 if True:
 
                     def dissam():
-                        cs = samlistbox.curselection()
-                        plsam = samlistbox.get(cs)
+                        try:
+                            cs = samlistbox.curselection()
+                            plsam = samlistbox.get(cs)
+                        except (UnboundLocalError, tk.TclError) as Error:
+                            pass
 
                         global pickkplname
                         pickkplname = plsam
@@ -362,7 +388,7 @@ if True:
                         # remove song selected from previous playlist
                         varsg.set('')
 
-                    lblabel = tk.Label(upframecp, text = "Your playlist")
+                    lblabel = tk.Label(upframecp, text = "Your playlist", fg='white', bg='#132933', font=("Calibri", 12, 'bold'))
                     lblabel.grid(row=0, column = 0)
 
                     samlistbox = tk.Listbox(upframecp, height=25, width=40)
@@ -387,30 +413,33 @@ if True:
 
 
                     def dissam2():
-                        cs = sam2listbox.curselection()
-                        plsam2 = sam2listbox.get(cs)
-
+                        try:
+                            cs = sam2listbox.curselection()
+                            plsam2 = sam2listbox.get(cs)
+                        except (UnboundLocalError, tk.TclError) as Error:
+                            pass
                         varsg.set('{}'.format(plsam2))
                     
-                    lb2label = tk.Label(upframecp, text ="Songs in playlist")
+                    lb2label = tk.Label(upframecp, text ="Songs in playlist", fg='white', bg='#132933', font=("Calibri", 12, 'bold'))
                     lb2label.grid(row=0, column=1)
 
                     sam2listbox = tk.Listbox(upframecp, height=25, width=40)
                     sam2listbox.bind('<<ListboxSelect>>', lambda x: dissam2())
-                    sam2listbox.grid(row=1,column=1) 
+                    sam2listbox.grid(row=1,column=1)
 
                 upframecp.grid()
 
                 # Bottom part (functions)
-                downframecp = tk.Frame(cpl, height="250", width="500", padx=5, pady=5, bg="red")
+                downframecp = tk.Frame(cpl, height="250", width="500", padx=5, pady=5, bg="#132933")
                 downframecp.configure(height=downframecp["height"],width=downframecp["width"])
                 downframecp.grid_propagate(0)
+
+
                 if True:
-
-
                     # For create playlist
-                    inframe_down3 = tk.LabelFrame(downframecp, text= "Functions")
-                    inframe_down3.grid(row=0,column=2)
+                    inframe_down3 = tk.LabelFrame(downframecp, bg="#132933", border=0)
+                    inframe_down3.place(x=15, y=15)
+
                     # verify playlist no exist, if suc then insert
                     def createpl():
                         execute_cr = False
@@ -456,15 +485,15 @@ if True:
                             samlistbox.grid(row=1,column=0)
 
                     # for create new playlsit
-                    elabel = tk.Label(inframe_down3, text= 'New Playlist Name: ')
-                    elabel.grid(row=0, column= 1)
+                    elabel = tk.Label(inframe_down3, text= 'New Playlist Name: ', fg='white', bg='#132933', font=("Calibri", 12, 'bold'))
+                    elabel.grid(row=0, column=1)
 
                     entered_name = tk.StringVar()
                     entrynew = tk.Entry(inframe_down3, textvariable=entered_name)
-                    entrynew.grid(row=1, column =1)
+                    entrynew.grid(row=1, column=1)
 
                     create_button = tk.Button(inframe_down3, text="Create", command=createpl)
-                    create_button.grid(row = 2, column = 1)
+                    create_button.grid(row=2, column=1, padx=5, pady=5)
                     
 
 
@@ -473,8 +502,9 @@ if True:
 
 
                     # For remove song from playlst
-                    inframe_down = tk.LabelFrame(downframecp, text= "Functions")
-                    inframe_down.grid(row=0,column=0)
+                    inframe_down = tk.LabelFrame(downframecp, bg="#132933", border=0)
+                    inframe_down.place(x=180, y=15)
+
                     def remol():
 
                         plsam = pickkplname
@@ -499,7 +529,7 @@ if True:
                         db.commit()
                     
                     # for delete song from playlist
-                    labelsg = tk.Label(inframe_down, text = "Song selected :")
+                    labelsg = tk.Label(inframe_down, text = "Song selected :", fg='white', bg='#132933', font=("Calibri", 12, 'bold'))
                     labelsg.grid(row=0, column= 0)
 
                     global varsg
@@ -508,7 +538,7 @@ if True:
                     entrysg.grid(row=1, column= 0)
 
                     buttonsg = tk.Button(inframe_down, text="Remove from playlist", command=remol)
-                    buttonsg.grid(row=2, column= 0)
+                    buttonsg.grid(row=2, column=0, padx=5, pady=5)
 
 
 
@@ -517,8 +547,9 @@ if True:
 
 
                     # add song to playlsit
-                    inframe_down2 = tk.LabelFrame(downframecp, text= "Functions")
-                    inframe_down2.grid(row=0,column=1)
+                    inframe_down2 = tk.LabelFrame(downframecp, bg="#132933", border=0)
+                    # inframe_down2.grid(row=0,column=1)
+                    inframe_down2.place(x=335, y=15)
                     def addmol():
                         plsam = pickkplname
                         query = "select pid from playlist_tbl where playlist_name = '{}';".format(plsam)
@@ -543,7 +574,7 @@ if True:
 
 
                     # add song to playlist
-                    labelsg2 = tk.Label(inframe_down2, text = "Song selected :")
+                    labelsg2 = tk.Label(inframe_down2, text = "Song selected :", fg='white', bg='#132933', font=("Calibri", 12, 'bold'))
                     labelsg2.grid(row=0, column= 0)
 
                     picked_sg = tk.StringVar()
@@ -554,9 +585,15 @@ if True:
                     entrysg2.grid(row=1, column= 0)
 
                     buttonsg2 = tk.Button(inframe_down2, text="Add to playlist", command=addmol)
-                    buttonsg2.grid(row=2, column= 0)
+                    buttonsg2.grid(row=2, column=0, padx=5, pady=5)
 
+                    myplaylist_back = tk.Button(downframecp, width=15, text="Back", command= lambda: backButton())
+                    myplaylist_back.place(x=190, y=115)
 
+                def backButton():
+                    cpl.destroy()
+                    top.update()
+                    top.deiconify()
 
                 downframecp.grid()
                 #Create new playlist
@@ -1178,8 +1215,8 @@ if True:
         raise_frame(main)
         login.mainloop()
 
-# ============================================================================== #
-
+# ====================== Left Side============================================== #
+# namtung code
 # Left Side
 if True:
     left_frame = tk.Frame(root, height="600", width="400", padx=5, pady=5, bg="#132933")
@@ -1341,113 +1378,119 @@ if True:
         # For select from listbox
         def pick_from_list():
             # Get selection from listbox
-            cs = result_listbox.curselection()
-            item_picked = result_listbox.get(cs)
-
-            # If song selected from search
-            if "Audio | " in item_picked:
-                item_picked = item_picked.replace("Audio | ","")
-                # name of item picked
-                entryText_name.set("{}".format(item_picked))
-
-                #Artist of the song (uploader)
-                for i in search_result:
-                    if i[1] == item_picked:
-                        item_id = i[0]
-                        item_artist_id = i[2]
-                searchAudioQuery ="select username from user_tbl where uid = {}".format(item_artist_id)
-                mycursor.execute(searchAudioQuery)
-                myresult = mycursor.fetchall()
-                for i in myresult:
-                    for j in i:
-                        artist_name = j
-                entryText_artist.set("{}".format(artist_name))
-
-                searchAudioQuery ="select category_name from category_tbl, song_in_category where (song_in_category.cid = category_tbl.cid) and song_in_category.aid = {}".format(item_id)
-                mycursor.execute(searchAudioQuery)
-                myresult = mycursor.fetchall()
-                categories = ""
-                for i in myresult:
-                    for j in i:
-                        if categories != "":
-                            categories =categories +", " + str(j)
-                        else:
-                            categories = str(j)
-                entryText_category.set("{}".format(categories))
-
-                # path of the song
-                searchAudioQuery ="select audio_path from audio_tbl where aid = {}".format(item_id)
-                mycursor.execute(searchAudioQuery)
-                myresult = mycursor.fetchall()
-                for i in myresult:
-                    for j in i:
-                        global selected_path
-                        selected_path = j
-                
-
-                searchAudioQuery ="select sum(like_status) from like_tbl where aid = {}".format(item_id)
-                mycursor.execute(searchAudioQuery)
-                myresult = mycursor.fetchall()
-                for i in myresult:
-                    for j in i:
-                        likenum = j
-                entryLikenum.set("{}".format(likenum))
-
-            if "Playlist | " in item_picked:
-                item_picked = item_picked.replace("Playlist | ","")
-                entryPlaylist_name.set("{}".format(item_picked))
-
-                for i in search_result_2:
-                    if item_picked == i[0]:
-                        entryPlaylist_user.set(i[1])
-                
-                searchAudioQuery ="select a.aid, a.audio_name, a.audio_path, a.uid from song_in_playlist s, playlist_tbl p, audio_tbl a where (s.pid = p.pid) and (s.aid = a.aid) and playlist_name = '{}'".format(item_picked)
-                mycursor.execute(searchAudioQuery)
-                myresult = mycursor.fetchall()
-
-                list_songs = []
-                for songs in myresult:
-                    songid = songs[0]
-                    songname = songs[1]
-                    songpath = songs[2]
-                    songartist = songs[3]
-
-                    list_songs.append(songname)
+            try:
+                cs = result_listbox.curselection()
+                item_picked = result_listbox.get(cs)
+            except (UnboundLocalError, tk.TclError) as Error:
+                pass
             
-                playlist_Listbox.delete(0,"end")
-                for audioname in list_songs:
-                    playlist_Listbox.insert('end', audioname)
-                playlist_Listbox.grid(row=2,column=0)
+            try:
+                # If song selected from search
+                if "Audio | " in item_picked:
+                    item_picked = item_picked.replace("Audio | ","")
+                    # name of item picked
+                    entryText_name.set("{}".format(item_picked))
 
-            if "Artist | " in item_picked:
-                item_picked = item_picked.replace("Artist | ","")
-                entryArtist_name.set("{}".format(item_picked))
+                    #Artist of the song (uploader)
+                    for i in search_result:
+                        if i[1] == item_picked:
+                            item_id = i[0]
+                            item_artist_id = i[2]
+                    searchAudioQuery ="select username from user_tbl where uid = {}".format(item_artist_id)
+                    mycursor.execute(searchAudioQuery)
+                    myresult = mycursor.fetchall()
+                    for i in myresult:
+                        for j in i:
+                            artist_name = j
+                    entryText_artist.set("{}".format(artist_name))
 
-                # search_result_3 = username of the artist
+                    searchAudioQuery ="select category_name from category_tbl, song_in_category where (song_in_category.cid = category_tbl.cid) and song_in_category.aid = {}".format(item_id)
+                    mycursor.execute(searchAudioQuery)
+                    myresult = mycursor.fetchall()
+                    categories = ""
+                    for i in myresult:
+                        for j in i:
+                            if categories != "":
+                                categories =categories +", " + str(j)
+                            else:
+                                categories = str(j)
+                    entryText_category.set("{}".format(categories))
 
-                searchAudioQuery ="select sum(l.like_status) from like_tbl l, audio_tbl a, user_tbl u where a.aid = l.aid and a.uid = u.uid and u.username = '{}'".format(item_picked)
-                mycursor.execute(searchAudioQuery)
-                myresult = mycursor.fetchall()
-                for i in myresult:
-                    for j in i:
-                        total_like_received = j
-                entryArtist_like.set("{}".format("Likes Received: "+ str(total_like_received)))
+                    # path of the song
+                    searchAudioQuery ="select audio_path from audio_tbl where aid = {}".format(item_id)
+                    mycursor.execute(searchAudioQuery)
+                    myresult = mycursor.fetchall()
+                    for i in myresult:
+                        for j in i:
+                            global selected_path
+                            selected_path = j
+                    
 
-                # select sum(like_status) from like_tbl where uid = 1
-                searchAudioQuery ="select a.audio_name from audio_tbl a, user_tbl u where (a.uid = u.uid) and u.username = '{}'".format(item_picked)
-                mycursor.execute(searchAudioQuery)
-                myresult = mycursor.fetchall()
+                    searchAudioQuery ="select sum(like_status) from like_tbl where aid = {}".format(item_id)
+                    mycursor.execute(searchAudioQuery)
+                    myresult = mycursor.fetchall()
+                    for i in myresult:
+                        for j in i:
+                            likenum = j
+                    entryLikenum.set("{}".format(likenum))
 
-                songlist = []
-                for j in myresult:
-                    for i in j:
-                        arsongname = i
-                        songlist.append(arsongname)
-            
-                artist_Listbox.delete(0,"end")
-                for audioname in songlist:
-                    artist_Listbox.insert('end', audioname)
-                artist_Listbox.grid(row=2,column=0)
+                if "Playlist | " in item_picked:
+                    item_picked = item_picked.replace("Playlist | ","")
+                    entryPlaylist_name.set("{}".format(item_picked))
+
+                    for i in search_result_2:
+                        if item_picked == i[0]:
+                            entryPlaylist_user.set(i[1])
+                    
+                    searchAudioQuery ="select a.aid, a.audio_name, a.audio_path, a.uid from song_in_playlist s, playlist_tbl p, audio_tbl a where (s.pid = p.pid) and (s.aid = a.aid) and playlist_name = '{}'".format(item_picked)
+                    mycursor.execute(searchAudioQuery)
+                    myresult = mycursor.fetchall()
+
+                    list_songs = []
+                    for songs in myresult:
+                        songid = songs[0]
+                        songname = songs[1]
+                        songpath = songs[2]
+                        songartist = songs[3]
+
+                        list_songs.append(songname)
+                
+                    playlist_Listbox.delete(0,"end")
+                    for audioname in list_songs:
+                        playlist_Listbox.insert('end', audioname)
+                    playlist_Listbox.grid(row=2,column=0)
+
+                if "Artist | " in item_picked:
+                    item_picked = item_picked.replace("Artist | ","")
+                    entryArtist_name.set("{}".format(item_picked))
+
+                    # search_result_3 = username of the artist
+
+                    searchAudioQuery ="select sum(l.like_status) from like_tbl l, audio_tbl a, user_tbl u where a.aid = l.aid and a.uid = u.uid and u.username = '{}'".format(item_picked)
+                    mycursor.execute(searchAudioQuery)
+                    myresult = mycursor.fetchall()
+                    for i in myresult:
+                        for j in i:
+                            total_like_received = j
+                    entryArtist_like.set("{}".format("Likes Received: "+ str(total_like_received)))
+
+                    # select sum(like_status) from like_tbl where uid = 1
+                    searchAudioQuery ="select a.audio_name from audio_tbl a, user_tbl u where (a.uid = u.uid) and u.username = '{}'".format(item_picked)
+                    mycursor.execute(searchAudioQuery)
+                    myresult = mycursor.fetchall()
+
+                    songlist = []
+                    for j in myresult:
+                        for i in j:
+                            arsongname = i
+                            songlist.append(arsongname)
+                
+                    artist_Listbox.delete(0,"end")
+                    for audioname in songlist:
+                        artist_Listbox.insert('end', audioname)
+                    artist_Listbox.grid(row=2,column=0)
+            except:
+                pass
 
 
 
@@ -1567,6 +1610,7 @@ if True:
                     pg.mixer.music.play(-1)
                     temp_name = entryText_name.get()
                     entryPlayingAudio.set("{}".format(temp_name))
+                    pauseButton["text"] = "▮▮"
                 
                 #if play a playlist
                 elif type(selected_path) == list:
@@ -1601,6 +1645,8 @@ if True:
 
                         # set event occur after end of song
                         pg.mixer.music.set_endevent(pg.USEREVENT)
+                        
+                        pauseButton["text"] = "▮▮"
 
                         # play whole playlist
                         running = True
@@ -1626,15 +1672,15 @@ if True:
                                 # Checking whether the 
                                 # player is still playing any song
                                 # if yes it will return true and false otherwise
-                                if not pg.mixer.music.get_busy():
-                                    print("Playlist completed")
+                                # if not pg.mixer.music.get_busy():
+                                #     print("Playlist completed")
+                                if len(selected_path) ==0:
                                     
                                     # When the playlist has
                                     # completed playing successfully
                                     # we'll go out of the
                                     # while-loop by using break
                                     running = False
-                                    break
                     except:
                         # it will have pygame video not initialist error, but we didnt use that so ..
                         # plus if import all from pygame it will bug
@@ -1646,16 +1692,41 @@ if True:
                 print("No item (songs) selected yet")
 
         def pauseSong():
-            pg.mixer.music.pause()
-        def unpauseSong():
-            pg.mixer.music.unpause()
-        def changeButton_pause():
-            pass
-        def changeButton_unpause():
-            pass
+            if pauseButton["text"] == "▶":
+                pauseButton["text"] = "▮▮"
+                pauseButton["bg"] = "white"
+                pg.mixer.music.unpause()
+            else:
+                pauseButton["text"] = "▶"
+                pauseButton["bg"] = "white"
+                pg.mixer.music.pause()
+
         def stopSong():
             pg.mixer.music.stop()
         
+        def volup():
+            x = pg.mixer.music.get_volume()
+            if (x <= 1.0) and (x >= 0):
+                x += 0.1
+            if (x <= 1.0) and (x >= 0):
+                pg.mixer.music.set_volume(x)
+                # x = x * 100
+                # int(x)
+                # volnowButton["text"] = "{}".format(x)
+
+
+        def voldown():
+            x = pg.mixer.music.get_volume()
+            if (x <= 1.0) and (x >= 0):
+                x -= 0.1
+            if (x <= 1.0) and (x >= 0):
+                pg.mixer.music.set_volume(x)
+                # x = x * 100
+                # int(x)
+                # volnowButton["text"] = "{}".format(x)
+
+
+
         def add_to_playlist():
             if guest_user=="":
                 login_win()
@@ -1664,9 +1735,11 @@ if True:
                 tobeadded = entryText_name.get()
 
                 # new window
+                root.withdraw()
                 cpl = Toplevel()
-                cpl.geometry("500x500")
+                cpl.geometry("500x400")
                 cpl.title("My Playlist")
+                # cpl.resizable(height=False, width=False)
 
                 # get username
                 temp_name = guest_user
@@ -1683,9 +1756,13 @@ if True:
                 upframecp.grid_propagate(0)
                 # View own playlist and its song
                 if True:
+
                     def dissam():
-                        cs = samlistbox.curselection()
-                        plsam = samlistbox.get(cs)
+                        try:
+                            cs = samlistbox.curselection()
+                            plsam = samlistbox.get(cs)
+                        except (UnboundLocalError, tk.TclError) as Error:
+                            pass
 
                         global pickkplname
                         pickkplname = plsam
@@ -1706,7 +1783,7 @@ if True:
                         # remove song selected from previous playlist
                         varsg.set('')
 
-                    lblabel = tk.Label(upframecp, text = "Your playlist")
+                    lblabel = tk.Label(upframecp, text = "Your playlist", fg='white', bg='#132933', font=("Calibri", 12, 'bold'))
                     lblabel.grid(row=0, column = 0)
 
                     samlistbox = tk.Listbox(upframecp, height=25, width=40)
@@ -1736,107 +1813,26 @@ if True:
 
                         varsg.set('{}'.format(plsam2))
                     
-                    lb2label = tk.Label(upframecp, text ="Songs in playlist")
+                    lb2label = tk.Label(upframecp, text ="Songs in playlist", fg='white', bg='#132933', font=("Calibri", 12, 'bold'))
                     lb2label.grid(row=0, column=1)
 
                     sam2listbox = tk.Listbox(upframecp, height=25, width=40)
                     sam2listbox.bind('<<ListboxSelect>>', lambda x: dissam2())
-                    sam2listbox.grid(row=1,column=1) 
+                    sam2listbox.grid(row=1,column=1)
 
-                upframecp.grid(row=0, column =0)
+                upframecp.grid()
 
-
-                downframecp = tk.Frame(cpl, height="250", width="500", padx=5, pady=5, bg="red")
+                # Bottom part (functions)
+                downframecp = tk.Frame(cpl, height="250", width="500", padx=5, pady=5, bg="#132933")
                 downframecp.configure(height=downframecp["height"],width=downframecp["width"])
                 downframecp.grid_propagate(0)
 
+
                 if True:
-
-                    inframe_down = tk.LabelFrame(downframecp, text= "Functions")
-                    inframe_down.grid(row=0,column=0)
-
-                    def remol():
-
-                        plsam = pickkplname
-                        query = "select pid from playlist_tbl where playlist_name = '{}';".format(plsam)
-                        mycursor.execute(query)
-                        myresult = mycursor.fetchall()
-                        for i in myresult:
-                            for j in i:
-                                pid = j
-                        
-
-                        remolsgname = entrysg.get()
-                        query = "select aid from audio_tbl where audio_name = '{}';".format(remolsgname)
-                        mycursor.execute(query)
-                        myresult = mycursor.fetchall()
-                        for i in myresult:
-                            for j in i:
-                                aid = j
-                        
-                        remolsong = "delete from song_in_playlist where pid = '{}' and aid = '{}';".format(pid, aid)
-                        mycursor.execute(remolsong)
-                        db.commit()
-                    
-                    # for delete song from playlist
-                    labelsg = tk.Label(inframe_down, text = "Song selected :")
-                    labelsg.grid(row=0, column= 0)
-
-                    global varsg
-                    varsg = tk.StringVar()
-                    entrysg = tk.Entry(inframe_down, textvariable=varsg, state=DISABLED)
-                    entrysg.grid(row=1, column= 0)
-
-                    buttonsg = tk.Button(inframe_down, text="Remove from playlist", command=remol)
-                    buttonsg.grid(row=2, column= 0)
-
-
-
-
-                    # add song to playlsit
-                    inframe_down2 = tk.LabelFrame(downframecp, text= "Functions")
-                    inframe_down2.grid(row=0,column=1)
-                    def addmol():
-                        plsam = pickkplname
-                        query = "select pid from playlist_tbl where playlist_name = '{}';".format(plsam)
-                        mycursor.execute(query)
-                        myresult = mycursor.fetchall()
-                        for i in myresult:
-                            for j in i:
-                                pid = j
-                        
-                        picked_sg = entryText_name.get()
-                        query = "select aid from audio_tbl where audio_name = '{}';".format(picked_sg)
-                        mycursor.execute(query)
-                        myresult = mycursor.fetchall()
-                        for i in myresult:
-                            for j in i:
-                                aid = j
-                        print(picked_sg)
-                        addmolsong = "insert into song_in_playlist (pid,aid) values({},{});".format(pid, aid)
-                        mycursor.execute(addmolsong)
-                        db.commit()
-
-
-
-                    # add song to playlist
-                    labelsg2 = tk.Label(inframe_down2, text = "Song selected :")
-                    labelsg2.grid(row=0, column= 0)
-
-                    picked_sg = tk.StringVar()
-                    
-                    picked_sg.set('{}'.format(tobeadded))
-
-                    entrysg2 = tk.Entry(inframe_down2, textvariable=picked_sg, state=DISABLED)
-                    entrysg2.grid(row=1, column= 0)
-
-                    buttonsg2 = tk.Button(inframe_down2, text="Add to playlist", command=addmol)
-                    buttonsg2.grid(row=2, column= 0)
-
-                    
                     # For create playlist
-                    inframe_down3 = tk.LabelFrame(downframecp, text= "Functions")
-                    inframe_down3.grid(row=0,column=2)
+                    inframe_down3 = tk.LabelFrame(downframecp, bg="#132933", border=0)
+                    inframe_down3.place(x=15, y=15)
+
                     # verify playlist no exist, if suc then insert
                     def createpl():
                         execute_cr = False
@@ -1882,21 +1878,117 @@ if True:
                             samlistbox.grid(row=1,column=0)
 
                     # for create new playlsit
-                    elabel = tk.Label(inframe_down3, text= 'New Playlist Name: ')
-                    elabel.grid(row=0, column= 1)
+                    elabel = tk.Label(inframe_down3, text= 'New Playlist Name: ', fg='white', bg='#132933', font=("Calibri", 12, 'bold'))
+                    elabel.grid(row=0, column=1)
 
                     entered_name = tk.StringVar()
                     entrynew = tk.Entry(inframe_down3, textvariable=entered_name)
-                    entrynew.grid(row=1, column =1)
+                    entrynew.grid(row=1, column=1)
 
                     create_button = tk.Button(inframe_down3, text="Create", command=createpl)
-                    create_button.grid(row = 2, column = 1)
+                    create_button.grid(row=2, column=1, padx=5, pady=5)
                     
 
 
 
-                downframecp.grid(row=1,column=0)
 
+
+
+                    # For remove song from playlst
+                    inframe_down = tk.LabelFrame(downframecp, bg="#132933", border=0)
+                    inframe_down.place(x=180, y=15)
+
+                    def remol():
+
+                        plsam = pickkplname
+                        query = "select pid from playlist_tbl where playlist_name = '{}';".format(plsam)
+                        mycursor.execute(query)
+                        myresult = mycursor.fetchall()
+                        for i in myresult:
+                            for j in i:
+                                pid = j
+                        
+
+                        remolsgname = entrysg.get()
+                        query = "select aid from audio_tbl where audio_name = '{}';".format(remolsgname)
+                        mycursor.execute(query)
+                        myresult = mycursor.fetchall()
+                        for i in myresult:
+                            for j in i:
+                                aid = j
+                        
+                        remolsong = "delete from song_in_playlist where pid = '{}' and aid = '{}';".format(pid, aid)
+                        mycursor.execute(remolsong)
+                        db.commit()
+                    
+                    # for delete song from playlist
+                    labelsg = tk.Label(inframe_down, text = "Song selected :", fg='white', bg='#132933', font=("Calibri", 12, 'bold'))
+                    labelsg.grid(row=0, column= 0)
+
+                    global varsg
+                    varsg = tk.StringVar()
+                    entrysg = tk.Entry(inframe_down, textvariable=varsg, state=DISABLED)
+                    entrysg.grid(row=1, column= 0)
+
+                    buttonsg = tk.Button(inframe_down, text="Remove from playlist", command=remol)
+                    buttonsg.grid(row=2, column=0, padx=5, pady=5)
+
+
+
+
+
+
+
+                    # add song to playlsit
+                    inframe_down2 = tk.LabelFrame(downframecp, bg="#132933", border=0)
+                    # inframe_down2.grid(row=0,column=1)
+                    inframe_down2.place(x=335, y=15)
+                    def addmol():
+                        plsam = pickkplname
+                        query = "select pid from playlist_tbl where playlist_name = '{}';".format(plsam)
+                        mycursor.execute(query)
+                        myresult = mycursor.fetchall()
+                        for i in myresult:
+                            for j in i:
+                                pid = j
+                        
+                        picked_sg = entryText_name.get()
+                        query = "select aid from audio_tbl where audio_name = '{}';".format(picked_sg)
+                        mycursor.execute(query)
+                        myresult = mycursor.fetchall()
+                        for i in myresult:
+                            for j in i:
+                                aid = j
+                        print(picked_sg)
+                        addmolsong = "insert into song_in_playlist (pid,aid) values({},{});".format(pid, aid)
+                        mycursor.execute(addmolsong)
+                        db.commit()
+
+
+
+                    # add song to playlist
+                    labelsg2 = tk.Label(inframe_down2, text = "Song selected :", fg='white', bg='#132933', font=("Calibri", 12, 'bold'))
+                    labelsg2.grid(row=0, column= 0)
+
+                    picked_sg = tk.StringVar()
+                    
+                    picked_sg.set('{}'.format(tobeadded))
+
+                    entrysg2 = tk.Entry(inframe_down2, textvariable=picked_sg, state=DISABLED)
+                    entrysg2.grid(row=1, column= 0)
+
+                    buttonsg2 = tk.Button(inframe_down2, text="Add to playlist", command=addmol)
+                    buttonsg2.grid(row=2, column=0, padx=5, pady=5)
+
+                    myplaylist_back = tk.Button(downframecp, width=15, text="Back", command= lambda: backButton())
+                    myplaylist_back.place(x=190, y=115)
+
+                def backButton():
+                    cpl.destroy()
+                    root.update()
+                    root.deiconify()
+
+            downframecp.grid()
 
 
 
@@ -1971,111 +2063,115 @@ if True:
 
 
         def pick_artist():
-            cs = artist_Listbox.curselection()
-            item_picked_artist = artist_Listbox.get(cs)
+            try:
+                cs = artist_Listbox.curselection()
+                item_picked_artist = artist_Listbox.get(cs)
+                entryText_name.set("{}".format(item_picked_artist))
 
-            entryText_name.set("{}".format(item_picked_artist))
-            
-            searchAudioQuery ="select aid, audio_name, uid, audio_path from audio_tbl where audio_name like" + "'%" + item_picked_artist + "%';"
-            mycursor.execute(searchAudioQuery)
-            myresult = mycursor.fetchall()
-            #Artist of the song (uploader)
-            for i in myresult:
-                if i[1] == item_picked_artist:
-                    item_id = i[0]
-                    item_artist_id = i[2]
+                searchAudioQuery ="select aid, audio_name, uid, audio_path from audio_tbl where audio_name like" + "'%" + item_picked_artist + "%';"
+                mycursor.execute(searchAudioQuery)
+                myresult = mycursor.fetchall()
+                #Artist of the song (uploader)
+                for i in myresult:
+                    if i[1] == item_picked_artist:
+                        item_id = i[0]
+                        item_artist_id = i[2]
 
-            
-            searchAudioQuery ="select username from user_tbl where uid = {}".format(item_artist_id)
-            mycursor.execute(searchAudioQuery)
-            myresult = mycursor.fetchall()
-            for i in myresult:
-                for j in i:
-                    artist_name = j
-            entryText_artist.set("{}".format(artist_name))
+                
+                searchAudioQuery ="select username from user_tbl where uid = {}".format(item_artist_id)
+                mycursor.execute(searchAudioQuery)
+                myresult = mycursor.fetchall()
+                for i in myresult:
+                    for j in i:
+                        artist_name = j
+                entryText_artist.set("{}".format(artist_name))
 
-            searchAudioQuery ="select category_name from category_tbl, song_in_category where (song_in_category.cid = category_tbl.cid) and song_in_category.aid = {}".format(item_id)
-            mycursor.execute(searchAudioQuery)
-            myresult = mycursor.fetchall()
-            categories = ""
-            for i in myresult:
-                for j in i:
-                    if categories != "":
-                        categories =categories +", " + str(j)
-                    else:
-                        categories = str(j)
-            entryText_category.set("{}".format(categories))
+                searchAudioQuery ="select category_name from category_tbl, song_in_category where (song_in_category.cid = category_tbl.cid) and song_in_category.aid = {}".format(item_id)
+                mycursor.execute(searchAudioQuery)
+                myresult = mycursor.fetchall()
+                categories = ""
+                for i in myresult:
+                    for j in i:
+                        if categories != "":
+                            categories =categories +", " + str(j)
+                        else:
+                            categories = str(j)
+                entryText_category.set("{}".format(categories))
 
-            # path of the song
-            searchAudioQuery ="select audio_path from audio_tbl where aid = {}".format(item_id)
-            mycursor.execute(searchAudioQuery)
-            myresult = mycursor.fetchall()
-            for i in myresult:
-                for j in i:
-                    global selected_path
-                    selected_path = j
-            
-            searchAudioQuery ="select sum(like_status) from like_tbl where aid = {}".format(item_id)
-            mycursor.execute(searchAudioQuery)
-            myresult = mycursor.fetchall()
-            for i in myresult:
-                for j in i:
-                    likenum = j
-            entryLikenum.set("{}".format(likenum))
-            
+                # path of the song
+                searchAudioQuery ="select audio_path from audio_tbl where aid = {}".format(item_id)
+                mycursor.execute(searchAudioQuery)
+                myresult = mycursor.fetchall()
+                for i in myresult:
+                    for j in i:
+                        global selected_path
+                        selected_path = j
+                
+                searchAudioQuery ="select sum(like_status) from like_tbl where aid = {}".format(item_id)
+                mycursor.execute(searchAudioQuery)
+                myresult = mycursor.fetchall()
+                for i in myresult:
+                    for j in i:
+                        likenum = j
+                entryLikenum.set("{}".format(likenum))
+            except (UnboundLocalError, tk.TclError) as Error:
+                pass
 
         def pick_playlist():
-            cs = playlist_Listbox.curselection()
-            item_picked_playlist = playlist_Listbox.get(cs)
+            try:
+                cs = playlist_Listbox.curselection()
+                item_picked_playlist = playlist_Listbox.get(cs)
+                entryText_name.set("{}".format(item_picked_playlist))
 
-            entryText_name.set("{}".format(item_picked_playlist))
+                searchAudioQuery ="select aid, audio_name, uid, audio_path from audio_tbl where audio_name like" + "'%" + item_picked_playlist + "%';"
+                mycursor.execute(searchAudioQuery)
+                myresult = mycursor.fetchall()
+                #Artist of the song (uploader)
+                for i in myresult:
+                    if i[1] == item_picked_playlist:
+                        item_id = i[0]
+                        item_artist_id = i[2]
 
-            searchAudioQuery ="select aid, audio_name, uid, audio_path from audio_tbl where audio_name like" + "'%" + item_picked_playlist + "%';"
-            mycursor.execute(searchAudioQuery)
-            myresult = mycursor.fetchall()
-            #Artist of the song (uploader)
-            for i in myresult:
-                if i[1] == item_picked_playlist:
-                    item_id = i[0]
-                    item_artist_id = i[2]
+                
+                searchAudioQuery ="select username from user_tbl where uid = {}".format(item_artist_id)
+                mycursor.execute(searchAudioQuery)
+                myresult = mycursor.fetchall()
+                for i in myresult:
+                    for j in i:
+                        artist_name = j
+                entryText_artist.set("{}".format(artist_name))
 
+                searchAudioQuery ="select category_name from category_tbl, song_in_category where (song_in_category.cid = category_tbl.cid) and song_in_category.aid = {}".format(item_id)
+                mycursor.execute(searchAudioQuery)
+                myresult = mycursor.fetchall()
+                categories = ""
+                for i in myresult:
+                    for j in i:
+                        if categories != "":
+                            categories =categories +", " + str(j)
+                        else:
+                            categories = str(j)
+                entryText_category.set("{}".format(categories))
+
+                # path of the song
+                searchAudioQuery ="select audio_path from audio_tbl where aid = {}".format(item_id)
+                mycursor.execute(searchAudioQuery)
+                myresult = mycursor.fetchall()
+                for i in myresult:
+                    for j in i:
+                        global selected_path
+                        selected_path = j
+                
+                searchAudioQuery ="select sum(like_status) from like_tbl where aid = {}".format(item_id)
+                mycursor.execute(searchAudioQuery)
+                myresult = mycursor.fetchall()
+                for i in myresult:
+                    for j in i:
+                        likenum = j
+                entryLikenum.set("{}".format(likenum))
             
-            searchAudioQuery ="select username from user_tbl where uid = {}".format(item_artist_id)
-            mycursor.execute(searchAudioQuery)
-            myresult = mycursor.fetchall()
-            for i in myresult:
-                for j in i:
-                    artist_name = j
-            entryText_artist.set("{}".format(artist_name))
-
-            searchAudioQuery ="select category_name from category_tbl, song_in_category where (song_in_category.cid = category_tbl.cid) and song_in_category.aid = {}".format(item_id)
-            mycursor.execute(searchAudioQuery)
-            myresult = mycursor.fetchall()
-            categories = ""
-            for i in myresult:
-                for j in i:
-                    if categories != "":
-                        categories =categories +", " + str(j)
-                    else:
-                        categories = str(j)
-            entryText_category.set("{}".format(categories))
-
-            # path of the song
-            searchAudioQuery ="select audio_path from audio_tbl where aid = {}".format(item_id)
-            mycursor.execute(searchAudioQuery)
-            myresult = mycursor.fetchall()
-            for i in myresult:
-                for j in i:
-                    global selected_path
-                    selected_path = j
-            
-            searchAudioQuery ="select sum(like_status) from like_tbl where aid = {}".format(item_id)
-            mycursor.execute(searchAudioQuery)
-            myresult = mycursor.fetchall()
-            for i in myresult:
-                for j in i:
-                    likenum = j
-            entryLikenum.set("{}".format(likenum))
+            except (UnboundLocalError, tk.TclError) as Error:
+                pass
         
         def select_playlist():            
             
@@ -2113,59 +2209,64 @@ if True:
             current_pl_name = selectedPlaylist_name.get()
 
             #selected_Listbox
-            cs = selected_Listbox.curselection()
-            global song_in_playlist_now
-            song_in_playlist_now = selected_Listbox.get(cs)
+            try:
+                cs = selected_Listbox.curselection()
+                global song_in_playlist_now
+                song_in_playlist_now = selected_Listbox.get(cs)
+                entryText_name.set("{}".format(song_in_playlist_now))
 
-            entryText_name.set("{}".format(song_in_playlist_now))
+                searchAudioQuery ="select aid, audio_name, uid, audio_path from audio_tbl where audio_name like" + "'%" + song_in_playlist_now + "%';"
+                mycursor.execute(searchAudioQuery)
+                myresult = mycursor.fetchall()
+                #Artist of the song (uploader)
+                for i in myresult:
+                    if i[1] == song_in_playlist_now:
+                        item_id = i[0]
+                        item_artist_id = i[2]
 
-            searchAudioQuery ="select aid, audio_name, uid, audio_path from audio_tbl where audio_name like" + "'%" + song_in_playlist_now + "%';"
-            mycursor.execute(searchAudioQuery)
-            myresult = mycursor.fetchall()
-            #Artist of the song (uploader)
-            for i in myresult:
-                if i[1] == song_in_playlist_now:
-                    item_id = i[0]
-                    item_artist_id = i[2]
+                
+                searchAudioQuery ="select username from user_tbl where uid = {}".format(item_artist_id)
+                mycursor.execute(searchAudioQuery)
+                myresult = mycursor.fetchall()
+                for i in myresult:
+                    for j in i:
+                        artist_name = j
+                entryText_artist.set("{}".format(artist_name))
 
-            
-            searchAudioQuery ="select username from user_tbl where uid = {}".format(item_artist_id)
-            mycursor.execute(searchAudioQuery)
-            myresult = mycursor.fetchall()
-            for i in myresult:
-                for j in i:
-                    artist_name = j
-            entryText_artist.set("{}".format(artist_name))
+                searchAudioQuery ="select category_name from category_tbl, song_in_category where (song_in_category.cid = category_tbl.cid) and song_in_category.aid = {}".format(item_id)
+                mycursor.execute(searchAudioQuery)
+                myresult = mycursor.fetchall()
+                categories = ""
+                for i in myresult:
+                    for j in i:
+                        if categories != "":
+                            categories =categories +", " + str(j)
+                        else:
+                            categories = str(j)
+                entryText_category.set("{}".format(categories))
+                
+                searchAudioQuery ="select sum(like_status) from like_tbl where aid = {}".format(item_id)
+                mycursor.execute(searchAudioQuery)
+                myresult = mycursor.fetchall()
+                for i in myresult:
+                    for j in i:
+                        likenum = j
+                entryLikenum.set("{}".format(likenum))
 
-            searchAudioQuery ="select category_name from category_tbl, song_in_category where (song_in_category.cid = category_tbl.cid) and song_in_category.aid = {}".format(item_id)
-            mycursor.execute(searchAudioQuery)
-            myresult = mycursor.fetchall()
-            categories = ""
-            for i in myresult:
-                for j in i:
-                    if categories != "":
-                        categories =categories +", " + str(j)
-                    else:
-                        categories = str(j)
-            entryText_category.set("{}".format(categories))
-            
-            searchAudioQuery ="select sum(like_status) from like_tbl where aid = {}".format(item_id)
-            mycursor.execute(searchAudioQuery)
-            myresult = mycursor.fetchall()
-            for i in myresult:
-                for j in i:
-                    likenum = j
-            entryLikenum.set("{}".format(likenum))
+                searchAudioQuery ="select a.audio_name, a.audio_path from playlist_tbl p, song_in_playlist s, audio_tbl a where ((p.pid = s.pid) and (a.aid = s.aid)) and p.playlist_name = '{}'".format(current_pl_name)
+                mycursor.execute(searchAudioQuery)
+                myresult = mycursor.fetchall()
+                path_list =[]
+                for i in myresult:
+                    path_list.append(i[1])
+                # print(path_list)
+                global selected_path
+                selected_path = path_list
 
-            searchAudioQuery ="select a.audio_name, a.audio_path from playlist_tbl p, song_in_playlist s, audio_tbl a where ((p.pid = s.pid) and (a.aid = s.aid)) and p.playlist_name = '{}'".format(current_pl_name)
-            mycursor.execute(searchAudioQuery)
-            myresult = mycursor.fetchall()
-            path_list =[]
-            for i in myresult:
-                path_list.append(i[1])
-            # print(path_list)
-            global selected_path
-            selected_path = path_list
+            except (UnboundLocalError, tk.TclError) as Error:
+                pass
+
+
 
     # #Top & Mid Right
     if True:
@@ -2307,18 +2408,36 @@ if True:
             playing_entry = tk.Entry(br_in_frame1, textvariable=entryPlayingAudio, state="disabled", justify=tk.CENTER)
             playing_entry.grid(row=0, column=1, columnspan=3)
 
-            # copied code
-            playButton = tk.Button(br_in_frame1, text = "Play", command = playSong)
-            playButton.grid(row=1,column=0)
 
-            pauseButton = tk.Button(br_in_frame1, text = "Pause", command = lambda:[pauseSong(),changeButton_pause()])
-            pauseButton.grid(row=1,column=2)
+            # play pause and stop
+            if True:
+                
+                # copied code
+                playButton = tk.Button(br_in_frame1, text = "Play", command = playSong)
+                playButton.grid(row=1,column=0)
 
-            unpauseButton = tk.Button(br_in_frame1, text = "Unpause", command = lambda:[unpauseSong(),changeButton_unpause()])
-            unpauseButton.grid(row=2,column=2)
+                pauseButton = tk.Button(br_in_frame1, text ='▶', command = lambda:[pauseSong()])
+                pauseButton.grid(row=1,column=2)
 
-            stopButton = tk.Button(br_in_frame1, text = "Stop", command = stopSong)
-            stopButton.grid(row=1,column=3)
+                stopButton = tk.Button(br_in_frame1, text = "Stop", command = stopSong)
+                stopButton.grid(row=1,column=3)
+
+
+                volupButton = tk.Button(br_in_frame1, text ='🔊', command = lambda:[volup()])
+                volupButton.grid(row=0,column=4)
+
+                voldownButton = tk.Button(br_in_frame1, text ='🔉', command = lambda:[voldown()])
+                voldownButton.grid(row=1,column=4)
+                
+                # dont plan on this, cuz it gives decimals, you can try, line 1685 uncomment
+                # volnowButton = tk.Button(br_in_frame1, text ='1', state=DISABLED,command = lambda:[])
+                # volnowButton.grid(row=1,column=5)
+
+                # prevButton = tk.Button(br_in_frame1, text ='▮◄', command = lambda:[voldown()])
+                # prevButton.grid(row=2,column=0)
+
+                # skipButton = tk.Button(br_in_frame1, text ='►▮', command = lambda:[voldown()])
+                # skipButton.grid(row=2,column=1)
 
             br_in_frame1.grid(row=1, column=1)
 
@@ -2344,7 +2463,6 @@ if True:
             selected_Listbox = tk.Listbox(br_in_frame2, height=10, width=20)
             selected_Listbox.bind('<<ListboxSelect>>', lambda x: pick_selected_p())
             selected_Listbox.grid(row=2,column=0)
-
 
             br_in_frame2.grid(row=1, column=0)
 
