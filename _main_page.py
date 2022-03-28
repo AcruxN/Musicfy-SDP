@@ -1491,9 +1491,17 @@ if True:
                 for i in myresult:
                     for j in i:
                         uid = j
-                likeQuery = "Update like_tbl set like_status = '1' where aid = '{}' and uid ='{}' ".format(aid, uid)
-                mycursor.execute(likeQuery)
-                db.commit()
+
+                chklikeQuery = "select like_status from like_tbl where aid = '{}' and uid = '{}'".format(aid, uid)
+                mycursor.execute(chklikeQuery)
+                if mycursor.fetchall() ==[]:
+                    likeQuery = "insert into like_tbl (aid, uid, like_status) values({},{},{});".format(aid, uid, '1')
+                    mycursor.execute(likeQuery)
+                    db.commit() 
+                else:
+                    likeQuery = "Update like_tbl set like_status = '1' where aid = '{}' and uid ='{}' ".format(aid, uid)
+                    mycursor.execute(likeQuery)
+                    db.commit()
 
                 searchAudioQuery ="select sum(like_status) from like_tbl where aid = {}".format(aid)
                 mycursor.execute(searchAudioQuery)
