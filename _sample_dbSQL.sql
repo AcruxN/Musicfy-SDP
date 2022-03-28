@@ -5,6 +5,11 @@ create table `user_tbl` (
     `usertype` varchar(10) not null,
     `username` varchar(30) not null,
     `password` varchar(16) not null,
+    `subscription` bool not null default 0,
+    `uploaded` int not null default 0,
+    `downloaded` int not null default 0,
+    `profile_image` varchar(50) not null default 0,
+    `image_id` varchar(50) not null default 0,
     primary key (uid)
 );
 
@@ -44,6 +49,7 @@ create table `song_in_category` (
 create table `playlist_tbl` (
     `pid` int not null auto_increment, -- Unique code for every playlist
     `uid` int not null,                -- Owner of playlist
+    `playlist_name` varchar(50) not null,
     primary key (pid),
     foreign key (uid) references user_tbl(uid) on delete cascade
 );
@@ -111,12 +117,12 @@ values (1,5),
 (5,2),
 (6,3);
 
-insert into `playlist_tbl` (pid, uid)
-values (1,1),
-(2,1),
-(3,1),
-(4,2),
-(5,3);
+insert into `playlist_tbl` (pid, uid, playlist_name)
+values (1,1, "Oh snap ACT 1st playlist"),
+(2,1, "playlist satu"),
+(3,1, "Playlist dua lipa"),
+(4,2, "third playlist"),
+(5,3, "playlist wu");
 
 insert into `song_in_playlist` (pid, aid)
 values (1,1),
