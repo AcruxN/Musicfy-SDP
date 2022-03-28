@@ -1,24 +1,15 @@
-from faulthandler import disable
-from glob import glob
-from importlib.resources import path
+# ============================= Imported Modules =============================
+import tkinter as tk
+from tkinter import DISABLED, StringVar, filedialog
+from tkinter import messagebox, Listbox, Toplevel
 import os
 from pathlib import Path
 import shutil
 from PIL import ImageTk, Image
-from tkinter import DISABLED, StringVar, filedialog
-from queue import Empty
-from select import select
-from telnetlib import STATUS
-import tkinter as tk
-from tkinter import messagebox, Listbox, Toplevel
 import re
-import tkinter
-from turtle import width, window_height
-# from cv2 import split
 import pygame as pg
-from pyparsing import col
 from py_SQL import db_connection
-# from driveconnector import ImageDownload, ImageUpload
+from driveconnector import ImageDownload, ImageUpload
 
 db, mycursor = db_connection()
 root = tk.Tk()
@@ -27,7 +18,7 @@ guest_user = ""
 # initialise pygame mixer
 pg.mixer.init()
 
-# ============================= Application Design =============================
+# ============================= Application Design ============================= #
 # Change Window(Application) Title
 root.title("Musicfy")
 # Change icon
@@ -36,12 +27,12 @@ root.title("Musicfy")
 # root.geometry("800x600")
 # Fix window's size
 # root.resizable(width=False, height=False)
-# ==============================================================================
+# ============================================================================== #
 
 
 # jason's code
 if True:
-    # ===================================== Main =============================================
+    # ===================================== Main ============================================= #
     def login_win():
         def raise_frame(frame):
             frame.tkraise()
@@ -59,7 +50,7 @@ if True:
         login_left_frame = tk.Frame(login, width=500, height=500, bg='#132933') 
         login_left_frame.grid()
 
-        my_img = ImageTk.PhotoImage(Image.open("image_files\music logo design.png"))
+        my_img = ImageTk.PhotoImage(Image.open("image\music logo design.png"))
         img_label = tk.Label(login_left_frame, image= my_img, borderwidth=0, highlightthickness=0)
         img_label.grid()
 
@@ -73,7 +64,7 @@ if True:
 
 
 
-        # ===================================== User Main =======================================
+        # ===================================== User Main ======================================= #
         global user
         def user(username):
             login.withdraw()
@@ -98,7 +89,7 @@ if True:
                 frame.place(x=0, y=0, width=500, height=500)
 
 
-            # ===================================== first frame insert thing here =====================================
+            # ===================================== First Frame [User Profile] ===================================== #
 
 
             # main title
@@ -111,21 +102,23 @@ if True:
             results = mycursor.fetchall()
 
             # display profile
-            # for row in results:
-            #     # display profile
-            #         path = "image/"+row[7]
-            #         print(path)
-            #         if os.path.exists(path):
-            #             ini_img = Image.open(path)
-            #             img = ImageTk.PhotoImage(ini_img.resize((150,150), Image.ANTIALIAS))
-            #             label = tk.Label(profile, image = img)
-            #             label.place(x=20, y=60)
-            #             print(path)
-            #         else:#display default profile if databse is none
-            #             ini_img = Image.open("image/defaultprofile.jpg")
-            #             img = ImageTk.PhotoImage(ini_img.resize((150,150), Image.ANTIALIAS))
-            #             label = tk.Label(profile, image = img)
-            #             label.place(x=20, y=60)
+            for row in results:
+                # display profile
+                    path = "image/"+row[7]
+                    print(path)
+                    if os.path.exists(path):
+                        ini_img = Image.open(path)
+                        img = ImageTk.PhotoImage(ini_img.resize((150,150), Image.ANTIALIAS))
+                        label = tk.Label(profile, image = img)
+                        label.place(x=20, y=90)
+                        print(path)
+                    else:#display default profile if databse is none
+                        ini_img = Image.open("image/defaultprofile.jpg")
+                        img = ImageTk.PhotoImage(ini_img.resize((150,150), Image.ANTIALIAS))
+                        label = tk.Label(profile, image = img)
+                        label.place(x=20, y=90)
+
+
 
 
             # ============================================= Upload Songs Function ============================================= #
@@ -259,10 +252,10 @@ if True:
                     Upload_button = tk.Button(up_song, text='Upload', command=lambda:[get_category(), Audio_upload(), Update_database(), updateAudio_category()]) 
                     Upload_button.grid(sticky='E', row=4,column=1)
 
-                    upload_quit_button = tk.Button(up_song, text="Quit", command= lambda: upload_quit())
+                    upload_quit_button = tk.Button(up_song, text="Back", command= lambda: backButton())
                     upload_quit_button.grid(sticky='E', row=0, column=1)
 
-                def upload_quit():
+                def backButton():
                     up_song.destroy()
                     top.update()
                     top.deiconify()
@@ -270,6 +263,7 @@ if True:
 
                 Upload_audio()
 
+            # ============================================= View Own Song Function ============================================= #
             # namtung code
             def viewownSong():
                 
@@ -322,7 +316,8 @@ if True:
                 own_Listbox.grid(row=0,column=0)
 
             def manageownPlaylsit():
-
+                
+                tobeadded = entryText_name.get()
                 # new window
                 cpl = Toplevel()
                 cpl.geometry("500x500")
@@ -406,11 +401,16 @@ if True:
 
                 upframecp.grid()
 
-
+                # Bottom part (functions)
                 downframecp = tk.Frame(cpl, height="250", width="500", padx=5, pady=5, bg="red")
                 downframecp.configure(height=downframecp["height"],width=downframecp["width"])
                 downframecp.grid_propagate(0)
                 if True:
+
+
+                    # For create playlist
+                    inframe_down3 = tk.LabelFrame(downframecp, text= "Functions")
+                    inframe_down3.grid(row=0,column=2)
                     # verify playlist no exist, if suc then insert
                     def createpl():
                         execute_cr = False
@@ -455,7 +455,26 @@ if True:
                                 samlistbox.insert('end', playname)
                             samlistbox.grid(row=1,column=0)
 
+                    # for create new playlsit
+                    elabel = tk.Label(inframe_down3, text= 'New Playlist Name: ')
+                    elabel.grid(row=0, column= 1)
+
+                    entered_name = tk.StringVar()
+                    entrynew = tk.Entry(inframe_down3, textvariable=entered_name)
+                    entrynew.grid(row=1, column =1)
+
+                    create_button = tk.Button(inframe_down3, text="Create", command=createpl)
+                    create_button.grid(row = 2, column = 1)
                     
+
+
+
+
+
+
+                    # For remove song from playlst
+                    inframe_down = tk.LabelFrame(downframecp, text= "Functions")
+                    inframe_down.grid(row=0,column=0)
                     def remol():
 
                         plsam = pickkplname
@@ -480,27 +499,64 @@ if True:
                         db.commit()
                     
                     # for delete song from playlist
-                    labelsg = tk.Label(downframecp, text = "Song selected :")
+                    labelsg = tk.Label(inframe_down, text = "Song selected :")
                     labelsg.grid(row=0, column= 0)
 
                     global varsg
                     varsg = tk.StringVar()
-                    entrysg = tk.Entry(downframecp, textvariable=varsg, state=DISABLED)
+                    entrysg = tk.Entry(inframe_down, textvariable=varsg, state=DISABLED)
                     entrysg.grid(row=1, column= 0)
 
-                    buttonsg = tk.Button(downframecp, text="Remove from playlist", command=remol)
+                    buttonsg = tk.Button(inframe_down, text="Remove from playlist", command=remol)
                     buttonsg.grid(row=2, column= 0)
 
-                    # for create new playlsit
-                    elabel = tk.Label(downframecp, text= 'New Playlist Name: ')
-                    elabel.grid(row=0, column= 1)
 
-                    entered_name = tk.StringVar()
-                    entrynew = tk.Entry(downframecp, textvariable=entered_name)
-                    entrynew.grid(row=1, column =1)
 
-                    create_button = tk.Button(downframecp, text="Create", command=createpl)
-                    create_button.grid(row = 2, column = 1)
+
+
+
+
+                    # add song to playlsit
+                    inframe_down2 = tk.LabelFrame(downframecp, text= "Functions")
+                    inframe_down2.grid(row=0,column=1)
+                    def addmol():
+                        plsam = pickkplname
+                        query = "select pid from playlist_tbl where playlist_name = '{}';".format(plsam)
+                        mycursor.execute(query)
+                        myresult = mycursor.fetchall()
+                        for i in myresult:
+                            for j in i:
+                                pid = j
+                        
+                        picked_sg = entryText_name.get()
+                        query = "select aid from audio_tbl where audio_name = '{}';".format(picked_sg)
+                        mycursor.execute(query)
+                        myresult = mycursor.fetchall()
+                        for i in myresult:
+                            for j in i:
+                                aid = j
+                        print(picked_sg)
+                        addmolsong = "insert into song_in_playlist (pid,aid) values({},{});".format(pid, aid)
+                        mycursor.execute(addmolsong)
+                        db.commit()
+
+
+
+                    # add song to playlist
+                    labelsg2 = tk.Label(inframe_down2, text = "Song selected :")
+                    labelsg2.grid(row=0, column= 0)
+
+                    picked_sg = tk.StringVar()
+                    
+                    picked_sg.set('{}'.format(tobeadded))
+
+                    entrysg2 = tk.Entry(inframe_down2, textvariable=picked_sg, state=DISABLED)
+                    entrysg2.grid(row=1, column= 0)
+
+                    buttonsg2 = tk.Button(inframe_down2, text="Add to playlist", command=addmol)
+                    buttonsg2.grid(row=2, column= 0)
+
+
 
                 downframecp.grid()
                 #Create new playlist
@@ -545,7 +601,10 @@ if True:
                 manageplaylist_button.place(x=70, y=400)
 
                 changetoartist_button =tk.Button(profile, text="Become an Artist", command=lambda:changetoartist())#function here)
-                changetoartist_button.place(x=350, y=400)
+                changetoartist_button.place(x=220, y=400)
+            
+            user_quit_button = tk.Button(profile, text="Quit", width=12, justify='center', command=lambda: quit(top))
+            user_quit_button.place(x=380, y=400)
 
             displayusername = tk.Label(profile, text=f"User Name : {username} ")
             displayusername.place(x=200, y=80)
@@ -571,16 +630,15 @@ if True:
             displaydownloaded = tk.Label(profile, text=f"Downloaded Songs : {downloaded}")
             displaydownloaded.place(x=200, y=320)
             displaydownloaded.config(fg='white', bg='#132933', font=('Helvatical bold',14, 'bold'))
-            # print(results[0][2])
 
             edit_profile_button = tk.Button(profile, text="Edit Profile", command=lambda: raise_frame(edit))
-            edit_profile_button.place(x=60, y=220)
+            edit_profile_button.place(x=60, y=250)
+
+      
 
 
-            
 
-
-            # ===================================== second frame insert thing here ===================================== 
+            # ===================================== Second Frame [User Profile] ===================================== #
             modify = tk.Label(edit, text="Modify Profile")
             modify.place(x=120, y=30)
             modify.config(fg='white', bg='#132933', font=('Helvatical bold',30, 'bold'))
@@ -588,7 +646,8 @@ if True:
 
 
 
-            # ===================================== modify username part =====================================
+
+            # ===================================== Modify Username [User Profile] ===================================== #
             # username label
             changeusername = tk.Label(edit, fg='white', bg='#132933', text="Username: *", font=("Calibri", 15, "bold"))
             changeusername.place(x=130, y=100)
@@ -599,7 +658,7 @@ if True:
 
 
 
-            # ===================================== modify password part =====================================
+            # ===================================== Modify Password [User Profile] ===================================== #
             # password label
             changepassword = tk.Label(edit,fg='white', bg='#132933', text="Password: *", font=("Calibri", 15, "bold"))
             changepassword.place(x=130, y=150)
@@ -610,7 +669,7 @@ if True:
 
 
 
-            # ===================================== modify profile image part =====================================
+            # ===================================== Modify Profile [User Profile] ===================================== #
             # get user id
             selecteduser = 'select * FROM user_tbl WHERE username = "%s"' % username
             mycursor.execute(selecteduser)
@@ -735,7 +794,7 @@ if True:
 
 
 
-            # ===================================== button part =====================================
+            # ===================================== Button [User Profile] ===================================== #
             savebutton = tk.Button(edit, text="Save Changes", command=lambda:check_info())
             savebutton.place(x=250, y=250)
 
@@ -746,14 +805,11 @@ if True:
             # to display the first frame
             raise_frame(profile) 
 
-
-            user_quit_button = tk.Button(profile, text="Quit", command=lambda: quit(top))
-            user_quit_button.place(x=450, y=0)
         
 
 
 
-        # ===================================== Admin Main =====================================
+        # ===================================== Admin Main ===================================== #
         def admin(username):
             login.withdraw()
             top = Toplevel()
@@ -764,7 +820,7 @@ if True:
             global guest_user
             guest_user = username
 
-            # ============================================= Update Listbox =============================================
+            # ============================================= Update Listbox [Admin] ============================================= #
             def update(data):
 
                 # delete all records in listbox
@@ -799,8 +855,8 @@ if True:
 
 
 
-            # ============================================= Delete =============================================
-            # delete a user in user table 
+            # ============================================= Delete [Admin] ============================================= #
+            # delete a user in user table  
             def deleteuser():
 
                 username_delete = userEntry.get()
@@ -829,7 +885,7 @@ if True:
 
 
 
-            # ============================================= Banning =============================================
+            # ============================================= Banning [Admin] ============================================= #
             # ban a user in user table
             def banuser():
 
@@ -862,7 +918,7 @@ if True:
 
 
 
-            # ============================================= Display User =============================================
+            # ============================================= Display User [Admin] ============================================= #
             # display all records in user table database
             def showuser():
 
@@ -879,7 +935,7 @@ if True:
 
 
 
-            # ============================================= Main =============================================
+            # ============================================= Main [Admin]============================================= #
             wel_admin = tk.Label(top, width=25, fg='white', bg='#132933', text="Welcome back, " + username +"", font=("Calibri", 15, "bold"))
             wel_admin.grid(row=1, column=2, columnspan=5)
 
@@ -927,8 +983,8 @@ if True:
 
 
 
-        # ===================================== Login =========================================
 
+        # ===================================== Login ========================================= #
         def login_verify():
             global username
             username = username_verify.get()
@@ -1012,7 +1068,7 @@ if True:
 
 
 
-        # ===================================== Sign Up =====================================
+        # ===================================== Sign Up ===================================== #
         def reg_verify():
             usern = reg_username.get()
             passw = reg_password.get()
@@ -1122,8 +1178,7 @@ if True:
         raise_frame(main)
         login.mainloop()
 
-# ==============================================================================
-
+# ============================================================================== #
 
 # Left Side
 if True:
@@ -1424,33 +1479,36 @@ if True:
 
     # Top left
     if True:
-        tl_frame = tk.LabelFrame(left_frame, text="Search", padx=5, pady=5, bg="#132933")
+        tl_frame = tk.LabelFrame(left_frame, height=100, width=380, bg="#132933", highlightthickness=0, border=0)
 
         # Creating label for search bar
-        searchLabel = tk.Label(tl_frame, text = "Search: ", font = ('Italic', 14), fg="dark blue")
-        searchLabel.grid(row = 0, column = 0, columnspan=2)
+        searchLabel = tk.Label(tl_frame, text = "Search: ", font = ('Calibri', 15, 'bold'), fg="white", bg="#132933")
+        # searchLabel.grid(row = 0, column = 0, columnspan=3)
+        searchLabel.place(x=10, y=1)
         # Creating input bar
-        searchBar = tk.Entry(tl_frame, width=50)
-        searchBar.grid(row = 1, column = 0, columnspan=4)
+        searchBar = tk.Entry(tl_frame, width=40)
+        # searchBar.grid(row = 1, column = 0, columnspan=2)
+        searchBar.place(x=80, y=7)
         # Search Button
-        searchButton = tk.Button(tl_frame, text = "Search", command = check_valid)
-        searchButton.grid(row = 1, column = 4)
+        searchButton = tk.Button(tl_frame, width=20, text = "Search", command = check_valid)
+        # searchButton.grid(row = 1, column = 2)
+        searchButton.place(x=175, y=30)
 
         # Checkboxes for artist, songs and playlist
         song_var = tk.IntVar()
-        song_chk = tk.Checkbutton(tl_frame, text="Song", variable=song_var)
+        song_chk = tk.Checkbutton(tl_frame, text="Song", variable=song_var, fg="#637da6", bg="#132933", font=("Calibri", 12, "bold"))
         song_chk.select()
-        song_chk.grid(row=2, column = 0)
+        song_chk.place(x=50, y=60)
 
         playlist_var = tk.IntVar()
-        playlist_chk = tk.Checkbutton(tl_frame, text="Playlist", variable=playlist_var)
+        playlist_chk = tk.Checkbutton(tl_frame, text="Playlist", variable=playlist_var, fg="#637da6", bg="#132933", font=("Calibri", 12, "bold"))
         playlist_chk.select()
-        playlist_chk.grid(row=2, column = 1)
+        playlist_chk.place(x=130, y=60)
 
         artist_var = tk.IntVar()
-        artist_chk = tk.Checkbutton(tl_frame, text="Artist", variable=artist_var)
+        artist_chk = tk.Checkbutton(tl_frame, text="Artist", variable=artist_var, fg="#637da6", bg="#132933", font=("Calibri", 12, "bold"))
         artist_chk.select()
-        artist_chk.grid(row=2, column = 2)
+        artist_chk.place(x=230, y=60)
 
 
 
@@ -1484,7 +1542,7 @@ if True:
     left_frame.grid(row=0, column=0)
 
 
-# ===================== Right Side==============================================
+# ===================== Right Side============================================== #
 
 # Right Side
 if True:
@@ -1599,7 +1657,248 @@ if True:
             pg.mixer.music.stop()
         
         def add_to_playlist():
-            pass
+            if guest_user=="":
+                login_win()
+            else:
+                #song name
+                tobeadded = entryText_name.get()
+
+                # new window
+                cpl = Toplevel()
+                cpl.geometry("500x500")
+                cpl.title("My Playlist")
+
+                # get username
+                temp_name = guest_user
+                #get uid with username 
+                searchQuery = "select uid from user_tbl where username = '{}'".format(temp_name)
+                mycursor.execute(searchQuery)
+                myresult = mycursor.fetchall()
+                for i in myresult:
+                    for j in i:
+                        uid = j
+
+                upframecp = tk.Frame(cpl, height="250", width="500", padx=5, pady=5, bg="#132933")
+                upframecp.configure(height=upframecp["height"],width=upframecp["width"])
+                upframecp.grid_propagate(0)
+                # View own playlist and its song
+                if True:
+                    def dissam():
+                        cs = samlistbox.curselection()
+                        plsam = samlistbox.get(cs)
+
+                        global pickkplname
+                        pickkplname = plsam
+
+                        searchQuery = "select a.audio_name from audio_tbl a, playlist_tbl p, song_in_playlist s where (p.pid = s.pid) and (a.aid = s.aid) and playlist_name = '{}'".format(plsam)
+                        mycursor.execute(searchQuery)
+                        myresult = mycursor.fetchall()
+                        listsg = []
+                        for i in myresult:
+                            for j in i:
+                                listsg.append(j)
+                        
+                        sam2listbox.delete(0,"end")
+                        for i in listsg:
+                            sam2listbox.insert("end", i)
+                        sam2listbox.grid(row=1, column=1)
+
+                        # remove song selected from previous playlist
+                        varsg.set('')
+
+                    lblabel = tk.Label(upframecp, text = "Your playlist")
+                    lblabel.grid(row=0, column = 0)
+
+                    samlistbox = tk.Listbox(upframecp, height=25, width=40)
+                    samlistbox.bind('<<ListboxSelect>>', lambda x: dissam())
+                    samlistbox.grid(row=1, column=0) 
+
+                    # fill in playlist name in listbox
+                    if True:
+                        query = "select playlist_name from playlist_tbl where uid = '{}'".format(uid)
+                        mycursor.execute(query)
+                        myresult = mycursor.fetchall()
+                        listpl = []
+                        for i in myresult:
+                            for j in i:
+                                listpl.append(j)
+                        
+                        samlistbox.delete(0,"end")
+                        for playname in listpl:
+                            samlistbox.insert('end', playname)
+                        samlistbox.grid(row=1,column=0)
+                
+
+
+                    def dissam2():
+                        cs = sam2listbox.curselection()
+                        plsam2 = sam2listbox.get(cs)
+
+                        varsg.set('{}'.format(plsam2))
+                    
+                    lb2label = tk.Label(upframecp, text ="Songs in playlist")
+                    lb2label.grid(row=0, column=1)
+
+                    sam2listbox = tk.Listbox(upframecp, height=25, width=40)
+                    sam2listbox.bind('<<ListboxSelect>>', lambda x: dissam2())
+                    sam2listbox.grid(row=1,column=1) 
+
+                upframecp.grid(row=0, column =0)
+
+
+                downframecp = tk.Frame(cpl, height="250", width="500", padx=5, pady=5, bg="red")
+                downframecp.configure(height=downframecp["height"],width=downframecp["width"])
+                downframecp.grid_propagate(0)
+
+                if True:
+
+                    inframe_down = tk.LabelFrame(downframecp, text= "Functions")
+                    inframe_down.grid(row=0,column=0)
+
+                    def remol():
+
+                        plsam = pickkplname
+                        query = "select pid from playlist_tbl where playlist_name = '{}';".format(plsam)
+                        mycursor.execute(query)
+                        myresult = mycursor.fetchall()
+                        for i in myresult:
+                            for j in i:
+                                pid = j
+                        
+
+                        remolsgname = entrysg.get()
+                        query = "select aid from audio_tbl where audio_name = '{}';".format(remolsgname)
+                        mycursor.execute(query)
+                        myresult = mycursor.fetchall()
+                        for i in myresult:
+                            for j in i:
+                                aid = j
+                        
+                        remolsong = "delete from song_in_playlist where pid = '{}' and aid = '{}';".format(pid, aid)
+                        mycursor.execute(remolsong)
+                        db.commit()
+                    
+                    # for delete song from playlist
+                    labelsg = tk.Label(inframe_down, text = "Song selected :")
+                    labelsg.grid(row=0, column= 0)
+
+                    global varsg
+                    varsg = tk.StringVar()
+                    entrysg = tk.Entry(inframe_down, textvariable=varsg, state=DISABLED)
+                    entrysg.grid(row=1, column= 0)
+
+                    buttonsg = tk.Button(inframe_down, text="Remove from playlist", command=remol)
+                    buttonsg.grid(row=2, column= 0)
+
+
+
+
+                    # add song to playlsit
+                    inframe_down2 = tk.LabelFrame(downframecp, text= "Functions")
+                    inframe_down2.grid(row=0,column=1)
+                    def addmol():
+                        plsam = pickkplname
+                        query = "select pid from playlist_tbl where playlist_name = '{}';".format(plsam)
+                        mycursor.execute(query)
+                        myresult = mycursor.fetchall()
+                        for i in myresult:
+                            for j in i:
+                                pid = j
+                        
+                        picked_sg = entryText_name.get()
+                        query = "select aid from audio_tbl where audio_name = '{}';".format(picked_sg)
+                        mycursor.execute(query)
+                        myresult = mycursor.fetchall()
+                        for i in myresult:
+                            for j in i:
+                                aid = j
+                        print(picked_sg)
+                        addmolsong = "insert into song_in_playlist (pid,aid) values({},{});".format(pid, aid)
+                        mycursor.execute(addmolsong)
+                        db.commit()
+
+
+
+                    # add song to playlist
+                    labelsg2 = tk.Label(inframe_down2, text = "Song selected :")
+                    labelsg2.grid(row=0, column= 0)
+
+                    picked_sg = tk.StringVar()
+                    
+                    picked_sg.set('{}'.format(tobeadded))
+
+                    entrysg2 = tk.Entry(inframe_down2, textvariable=picked_sg, state=DISABLED)
+                    entrysg2.grid(row=1, column= 0)
+
+                    buttonsg2 = tk.Button(inframe_down2, text="Add to playlist", command=addmol)
+                    buttonsg2.grid(row=2, column= 0)
+
+                    
+                    # For create playlist
+                    inframe_down3 = tk.LabelFrame(downframecp, text= "Functions")
+                    inframe_down3.grid(row=0,column=2)
+                    # verify playlist no exist, if suc then insert
+                    def createpl():
+                        execute_cr = False
+                        listex = []
+                        varplname = entered_name.get()
+
+                        if len(varplname) <= 3:
+                            messagebox.showinfo("Error", "Playlist name cannot be too short!")
+                        elif len(varplname) >= 50:
+                            messagebox.showinfo("Error", "Playlist name cannot be too long!")
+                        else:
+                            # search existing playlist
+                            searchQuery = "select p.playlist_name from playlist_tbl p"
+                            mycursor.execute(searchQuery)
+                            myresult = mycursor.fetchall()
+                            print(myresult)
+                            for i in myresult:
+                                for j in i:
+                                    listex.append(j)
+                            if varplname not in listex:
+                                execute_cr = True
+                            else:
+                                messagebox.showinfo("Error", "Playlist exist!")
+
+                        if execute_cr:
+                            insertnewplaylist = "insert into `playlist_tbl` (uid, playlist_name) values ('{}','{}');".format(uid, varplname)
+                            mycursor.execute(insertnewplaylist)
+                            db.commit()
+                            messagebox.showinfo("Error", "Playlist Created!")
+
+                            #refresh
+                            query = "select playlist_name from playlist_tbl where uid = '{}'".format(uid)
+                            mycursor.execute(query)
+                            myresult = mycursor.fetchall()
+                            listpl = []
+                            for i in myresult:
+                                for j in i:
+                                    listpl.append(j)
+                            
+                            samlistbox.delete(0,"end")
+                            for playname in listpl:
+                                samlistbox.insert('end', playname)
+                            samlistbox.grid(row=1,column=0)
+
+                    # for create new playlsit
+                    elabel = tk.Label(inframe_down3, text= 'New Playlist Name: ')
+                    elabel.grid(row=0, column= 1)
+
+                    entered_name = tk.StringVar()
+                    entrynew = tk.Entry(inframe_down3, textvariable=entered_name)
+                    entrynew.grid(row=1, column =1)
+
+                    create_button = tk.Button(inframe_down3, text="Create", command=createpl)
+                    create_button.grid(row = 2, column = 1)
+                    
+
+
+
+                downframecp.grid(row=1,column=0)
+
+
+
 
         def like_song():
             if guest_user=="":
