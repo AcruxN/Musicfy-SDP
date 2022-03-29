@@ -9,7 +9,9 @@ from PIL import ImageTk, Image
 import re
 import pygame as pg
 from py_SQL import db_connection
-
+import wexpect
+import pexpect
+import pdb
 from driveconnector import FileUpload, FileDownload
 import os
 
@@ -109,7 +111,11 @@ if True:
             results = mycursor.fetchall()
 
             # os.system("c")
-            # import pdb; pdb.set_trace()
+            child = pexpect.popen_spawn.PopenSpawn('cmd', timeout=1)
+            child.expect('>')
+            child.sendline('python child.py')
+            child.expect ('> (Pdb)')
+            child.sendline ('c')
 
             # display profile
             for row in results:
@@ -1835,6 +1841,7 @@ if True:
                         # Cannot apply
                         # Play playlist problem lies here, when in while running, other component cannot be touched
                         if False:
+
                             def check_event():
                                 pg.init()
                                 for event in pg.event.get_endevent():
@@ -1851,7 +1858,7 @@ if True:
                                 pg.mixer.init()
 
                             check_event()
-                            
+
                             # # play whole playlist
                             # running = True
                             # while running:
