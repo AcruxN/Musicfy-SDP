@@ -19,6 +19,9 @@ guest_user = ""
 pg.mixer.init()
 # pg.init()
 
+
+
+
 # ============================= Application Design ============================= #
 # Change Window(Application) Title
 root.title("Musicfy")
@@ -1790,61 +1793,71 @@ if True:
                         
                         pauseButton["text"] = "▮▮"
 
-                        # play whole playlist
-                        running = True
-                        
-                        try:
 
-                            while running:
-                                # pg.init()
-
-                                event_get = pg.event.get()
-
-                                # checking if any event has been
-                                # hosted at time of playing
-                                for event in event_get:
-                                    
-                                    print("Event here")
-                                    print(event)
-                                    
-                                    # A event will be hosted
-                                    # after the end of every song
+                        # !!!!!!!!!!!!!!!!!!!!!PROBLEM!!!!!!!!!!
+                        # Read https://python-forum.io/thread-23589.html
+                        # Cannot apply
+                        # Play playlist problem lies here, when in while running, other component cannot be touched
+                        if False:
+                            def check_event():
+                                pg.init()
+                                for event in pg.event.get_endevent():
                                     if event.type == pg.USEREVENT:
-                                        print('Song Finished')
-                                        
-                                        # Checking our playList
-                                        # that if any song exist or
-                                        # it is empty
+                                        print('music end event')
+                            
                                         if len(selected_path) > 0:
                                             
                                             # if song available then load it in player
                                             # and remove from the player
                                             pg.mixer.music.queue(selected_path[0])
                                             selected_path.pop(0)
-                                    # Checking whether the 
-                                    # player is still playing any song
-                                    # if yes it will return true and false otherwise
-                                    if not pg.mixer.music.get_busy():
-                                        print("Playlist completed")
-                                    # if len(selected_path) ==0:
+                                pg.quit()
+                                pg.mixer.init()
+
+                            check_event()
+                            
+                            # # play whole playlist
+                            # running = True
+                            # while running:
+                            #     # pg.init()
+
+
+                            #     # Code stops here because pygame.event need pg.init(), which breaks the whole program because when in while loop, cant do other stuff
+                            #     event_get = pg.event.get()
+
+                            #     # checking if any event has been hosted at time of playing
+                            #     for event in event_get:
+                                    
+                            #         # print("Event here")
+                            #         # print(event)
+                                    
+                            #         # A event will be hosted after the end of every song
+                            #         if event.type == pg.USEREVENT:
+                            #             print('Song Finished')
                                         
-                                        # When the playlist has
-                                        # completed playing successfully
-                                        # we'll go out of the
-                                        # while-loop by using break
-                                        running = False
+                            #             # Checking our playList that if any song exist or it is empty
+                            #             if len(selected_path) > 0:
+                                            
+                            #                 # if song available then load it in player
+                            #                 # and remove from the player
+                            #                 pg.mixer.music.queue(selected_path[0])
+                            #                 selected_path.pop(0)
+                            #         # Checking whether the player is still playing any song if yes it will return true and false otherwise
+                            #         if not pg.mixer.music.get_busy():
+                            #             print("Playlist completed")
+                            #         # if len(selected_path) ==0:
+                                        
+                            #             # When the playlist has completed playing successfully we'll go out of the while-loop by using break
+                            #             running = False
 
-                                        # pg.quit()
-                                        # pg.mixer.init()
+                            #             # pg.quit()
+                            #             # pg.mixer.init()
 
-                                        break
-                        except:
+                            #             break
+                    except:
                             # it will have pygame video not initialist error, but we didnt use that so ..
                             # plus if import all from pygame it will bug
                             pass
-                    except:
-                        pass
-
 
 
             except NameError:
