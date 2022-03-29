@@ -162,7 +162,7 @@ def ImageDownload(image_id, image_name):
 
 def ImageUpload(image_name, user_id):
     uploadname = str(user_id)+'.jpg'
-    file_metadata = {'name': uploadname, 'parents': ['1fLldujG9j82no3x9hYlsat6Vw8FQTsZ-']}#to send the data to google drive
+    file_metadata = {'name': uploadname, 'parents': ['1oVNqxZLgKijznqNPNtjQrdqq84iX4Dua']}#to send the data to google drive
     media = MediaFileUpload(image_name, mimetype = 'image/jpeg' or 'image/png')#specify the file type 
     file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()#execution 
     uploadid = file.get('id')#get the file id
