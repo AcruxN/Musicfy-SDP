@@ -1034,7 +1034,7 @@ if True:
             try:
                 # checks whether usertype "listener" is in list
                 if 'listener' in results[0]:
-                    messagebox.showinfo("Musicfy", "User Login Successfull!")
+                    messagebox.showinfo("Musicfy", "You are logged in..")
                     loguser_entry.delete(0, tk.END)
                     logpass_entry.delete(0, tk.END)
                     login.withdraw()
@@ -1042,7 +1042,7 @@ if True:
 
                 # checks whether usertype "artist" is in list 
                 elif 'artist' in results[0]:
-                    messagebox.showinfo("Musicfy", "User Login Successfull!")
+                    messagebox.showinfo("Musicfy", "You are logged in..")
                     loguser_entry.delete(0, tk.END)
                     logpass_entry.delete(0, tk.END)
                     login.withdraw()
@@ -1050,7 +1050,7 @@ if True:
 
                 # checks whether usertype "admin" is in list
                 elif 'admin' in results[0]:
-                    messagebox.showinfo("Musicfy", "Admin Login Successfull!")
+                    messagebox.showinfo("Musicfy", "Admin logged in..")
                     loguser_entry.delete(0, tk.END)
                     logpass_entry.delete(0, tk.END)
                     login.withdraw()
@@ -1144,9 +1144,14 @@ if True:
                         messagebox.showinfo("Error", "Username cant contain any special characters")
                         reguser_entry.delete(0, tk.END)
 
-                    # checks if the length of password is more then 10 characters
+                    # checks if the length of password is more than 10 characters
                     elif len(passw) > 10:
                         messagebox.showinfo("Error", "Password cant exceed 10 characters")
+                        regpass_entry.delete(0, tk.END)
+
+                    # checks if the length of password is less than 4 characters
+                    elif len(passw) <= 4:
+                        messagebox.showinfo("Error", "Password cant be shorter than 4 characters")
                         regpass_entry.delete(0, tk.END)
 
                     # chesk if password contain any special characters
@@ -1169,7 +1174,7 @@ if True:
                         reg_val = ("listener", usern, passw)
                         mycursor.execute(reg_sql, reg_val)
                         db.commit()
-                        messagebox.showinfo("Information", "Registration Successfull!")
+                        messagebox.showinfo("Information", "Registration Successfull")
 
                         reg_username.set("")
                         reg_password.set("")
@@ -1560,7 +1565,8 @@ if True:
 
     # Bottom left
     if True:
-        bl_frame = tk.LabelFrame(left_frame, text="Result", padx=5, pady=5, bg="#132933")
+        bl_frame = tk.LabelFrame(left_frame, text="Searched Songs", padx=5, pady=5, bg="#132933", border=0)
+        bl_frame.config(fg='white', font=("Calibri", 15, 'bold'))
         # Create listbox
         result_listbox = tk.Listbox(bl_frame, height=25, width=52)
         result_listbox.bind('<<ListboxSelect>>', lambda x: pick_from_list())
@@ -2276,18 +2282,19 @@ if True:
 
         # top right details
         if True:
-            tr_in_frame = tk.LabelFrame(tr_frame, text="Audio Details", padx=100, pady=15)
+            tr_in_frame = tk.LabelFrame(tr_frame, text="Audio Details", padx=100, pady=3, bg='#132933', border=0)
+            tr_in_frame.config(fg='white', font=("Calibri", 15, 'bold'))
             # tr_in_frame.configure(height=tr_frame["height"],width=tr_frame["width"])
             # tr_in_frame.grid_propagate(0)
             if True:
                 # Labels
-                selected_SongName = tk.Label(tr_in_frame, text="Song Name: ")
+                selected_SongName = tk.Label(tr_in_frame, text="Song Name : ", fg='white', bg='#132933', font=("Calibri", 12, 'bold'))
                 selected_SongName.grid()
 
-                selected_Artist = tk.Label(tr_in_frame, text="Artist")
+                selected_Artist = tk.Label(tr_in_frame, text="Artist : ", fg='white', bg='#132933', font=("Calibri", 12, 'bold'))
                 selected_Artist.grid()
 
-                selected_Category = tk.Label(tr_in_frame, text="Category")
+                selected_Category = tk.Label(tr_in_frame, text="Category : ", fg='white', bg='#132933', font=("Calibri", 12, 'bold'))
                 selected_Category.grid()
 
                 # Displays of song detail with entries
@@ -2308,7 +2315,8 @@ if True:
 
         # Top right like and dislike
         if True:
-            tr_in_frame3 = tk.LabelFrame(tr_frame, padx=5, pady=5)
+            tr_in_frame3 = tk.LabelFrame(tr_frame, padx=5, pady=5, bg='#132933', border=0)
+            tr_in_frame3.config(fg='white', font=("Calibri", 12, 'bold'))
 
             addtoPlaylist_Button = tk.Button(tr_in_frame3, text = "Add To Playlist", padx=20, command= add_to_playlist)
             addtoPlaylist_Button.grid(row=0, column=0, padx=20)
@@ -2335,7 +2343,8 @@ if True:
 
             # Artist from search
             if True:
-                tr_in_frame3 = tk.LabelFrame(mr_frame, text="Artist Details", padx=5, pady=5)
+                tr_in_frame3 = tk.LabelFrame(mr_frame, text="Artist Details", padx=5, pady=5, bg='#132933', border=0)
+                tr_in_frame3.config(fg='white', font=("Calibri", 15, 'bold'))
 
                 global entryArtist_name
                 global entryArtist_like
@@ -2352,7 +2361,7 @@ if True:
                 artist_Listbox.bind('<<ListboxSelect>>', lambda x: pick_artist())
                 artist_Listbox.grid(row=2,column=0)
 
-                eatspace = tk.Label(tr_in_frame3, text="         ", height= 2)
+                eatspace = tk.Label(tr_in_frame3, text="         ", height=2, bg='#132933')
                 eatspace.grid(row=3, column=0)
 
                 tr_in_frame3.grid(row=0, column=0)
@@ -2360,8 +2369,9 @@ if True:
 
             # Playlist from search
             if True:
-                tr_in_frame2 = tk.LabelFrame(mr_frame, text="Playlist Details", padx=5, pady=5)
-
+                tr_in_frame2 = tk.LabelFrame(mr_frame, text="Playlist Details", padx=5, pady=5, bg='#132933', border=0)
+                tr_in_frame2.config(fg='white', font=("Calibri", 15, 'bold'))
+                
                 global entryPlaylist_name
                 global entryPlaylist_user
                 entryPlaylist_name = tk.StringVar()
