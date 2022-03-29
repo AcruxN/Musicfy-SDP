@@ -18,6 +18,7 @@ create table `audio_tbl` (
     `audio_name` varchar(50) not null,
     `uid` int not null, -- id of Artist / Uploader
     `audio_path` varchar(255) not null, -- Reason of not storing as BLOB: Performance overhead
+    `song_id` varchar(50) not null,
     primary key (aid),
     foreign key (uid) references user_tbl(uid) on delete cascade
 );
