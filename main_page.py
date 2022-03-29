@@ -10,6 +10,7 @@ import re
 import pygame as pg
 from py_SQL import db_connection
 from driveconnector import ImageDownload, ImageUpload
+import os
 
 db, mycursor = db_connection()
 root = tk.Tk()
@@ -105,6 +106,9 @@ if True:
             selecteduser = 'select * FROM user_tbl WHERE username = "%s"' % username
             mycursor.execute(selecteduser)
             results = mycursor.fetchall()
+
+            # os.system("c")
+            # import pdb; pdb.set_trace()
 
             # display profile
             for row in results:
