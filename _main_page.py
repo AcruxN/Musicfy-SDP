@@ -17,6 +17,7 @@ root = tk.Tk()
 guest_user = ""
 # initialise pygame mixer
 pg.mixer.init()
+# pg.init()
 
 # ============================= Application Design ============================= #
 # Change Window(Application) Title
@@ -28,6 +29,7 @@ root.title("Musicfy")
 # Fix window's size
 # root.resizable(width=False, height=False)
 # ============================================================================== #
+
 
 
 # jason's code
@@ -442,47 +444,106 @@ if True:
 
                     # verify playlist no exist, if suc then insert
                     def createpl():
-                        execute_cr = False
-                        listex = []
-                        varplname = entered_name.get()
-
-                        if len(varplname) <= 3:
-                            messagebox.showinfo("Error", "Playlist name cannot be too short!")
-                        elif len(varplname) >= 50:
-                            messagebox.showinfo("Error", "Playlist name cannot be too long!")
+                        
+                        temp_uname = guest_user
+                        if guest_user == "":
+                            login_win()
                         else:
-                            # search existing playlist
-                            searchQuery = "select p.playlist_name from playlist_tbl p"
-                            mycursor.execute(searchQuery)
-                            myresult = mycursor.fetchall()
-                            print(myresult)
-                            for i in myresult:
-                                for j in i:
-                                    listex.append(j)
-                            if varplname not in listex:
-                                execute_cr = True
-                            else:
-                                messagebox.showinfo("Error", "Playlist exist!")
+                            def nice_sub():
+                                query ="select uid from user_tbl where username = '{}'".format(temp_uname)
+                                mycursor.execute(query)
+                                myresult = mycursor.fetchall() 
+                                for i in myresult:
+                                    for j in i:
+                                        uid = i
 
-                        if execute_cr:
-                            insertnewplaylist = "insert into `playlist_tbl` (uid, playlist_name) values ('{}','{}');".format(uid, varplname)
-                            mycursor.execute(insertnewplaylist)
-                            db.commit()
-                            messagebox.showinfo("Error", "Playlist Created!")
+                                sql = "update user_tbl set subscription = 1 where uid = '{}'".format(uid)
+                                mycursor.execute(sql)
+                                db.commit()
 
-                            #refresh
-                            query = "select playlist_name from playlist_tbl where uid = '{}'".format(uid)
+                            
+                            query = "select subscription from user_tbl where username = '{}'".format(temp_uname)
                             mycursor.execute(query)
                             myresult = mycursor.fetchall()
-                            listpl = []
                             for i in myresult:
                                 for j in i:
-                                    listpl.append(j)
+                                    is_sub = j
                             
-                            samlistbox.delete(0,"end")
-                            for playname in listpl:
-                                samlistbox.insert('end', playname)
-                            samlistbox.grid(row=1,column=0)
+                            if is_sub == 0:
+                                cpl.withdraw()
+                                subwin = Toplevel()
+                                subwin.geometry("250x200")
+                                subwin.title("Subscribe!")
+                                subwin.configure(bg='#132933')
+                                subwin.resizable(width=False, height=False)
+
+                                subtitlabel = tk.Label(subwin, text="Oops! You are not subscribed... \n  Please Subscribe to Support Us", fg='white', bg='#132933', font=("Calibri", 12, 'bold'))
+                                subtitlabel.place(x=10, y=6)
+
+                                label_sample = tk.Label(subwin, text="Payment Details :", fg='white', bg='#132933', font=("Calibri", 10, 'bold'))
+                                label_sample.place(x=3, y=70)
+                                entry_sample1 = tk.Entry(subwin)
+                                entry_sample1.place(x=110, y=70)
+
+
+                                label_sample2 = tk.Label(subwin, text="Password :", fg='white', bg='#132933', font=("Calibri", 10, 'bold'))
+                                label_sample2.place(x=3, y=100)
+                                entry_sample2 = tk.Entry(subwin)
+                                entry_sample2.place(x=110, y=100)
+
+                                button_sample = tk.Button(subwin, text="Confirm", command=nice_sub)
+                                button_sample.place(x=180, y=125)
+
+                                subBackButton = tk.Button(subwin, text="Back", command= lambda: subButton())
+                                subBackButton.place(x=135, y=125)
+
+                                def subButton():
+                                    subwin.destroy()
+                                    cpl.update()
+                                    cpl.deiconify()
+
+                            else:
+                                execute_cr = False
+                                listex = []
+                                varplname = entered_name.get()
+
+                                if len(varplname) <= 3:
+                                    messagebox.showinfo("Error", "Playlist name cannot be too short!")
+                                elif len(varplname) >= 50:
+                                    messagebox.showinfo("Error", "Playlist name cannot be too long!")
+                                else:
+                                    # search existing playlist
+                                    searchQuery = "select p.playlist_name from playlist_tbl p"
+                                    mycursor.execute(searchQuery)
+                                    myresult = mycursor.fetchall()
+                                    print(myresult)
+                                    for i in myresult:
+                                        for j in i:
+                                            listex.append(j)
+                                    if varplname not in listex:
+                                        execute_cr = True
+                                    else:
+                                        messagebox.showinfo("Error", "Playlist exist!")
+
+                                if execute_cr:
+                                    insertnewplaylist = "insert into `playlist_tbl` (uid, playlist_name) values ('{}','{}');".format(uid, varplname)
+                                    mycursor.execute(insertnewplaylist)
+                                    db.commit()
+                                    messagebox.showinfo("Error", "Playlist Created!")
+
+                                    #refresh
+                                    query = "select playlist_name from playlist_tbl where uid = '{}'".format(uid)
+                                    mycursor.execute(query)
+                                    myresult = mycursor.fetchall()
+                                    listpl = []
+                                    for i in myresult:
+                                        for j in i:
+                                            listpl.append(j)
+                                    
+                                    samlistbox.delete(0,"end")
+                                    for playname in listpl:
+                                        samlistbox.insert('end', playname)
+                                    samlistbox.grid(row=1,column=0)
 
                     # for create new playlsit
                     elabel = tk.Label(inframe_down3, text= 'New Playlist Name: ', fg='white', bg='#132933', font=("Calibri", 12, 'bold'))
@@ -598,8 +659,79 @@ if True:
                 downframecp.grid()
                 #Create new playlist
 
-                
+            def copycat():
+                # to take select the row containing that username
+                selecteduser = 'select * FROM user_tbl WHERE username = "%s"' % username
+                mycursor.execute(selecteduser)
+                results = mycursor.fetchall()
 
+
+                # display other info 
+                usertype = results[0][1]
+                username = results[0][2]
+                subscription = results[0][4]
+                uploaded = results[0][5]
+                downloaded = results[0][6]
+
+                if usertype == "artist":
+                    # display button
+                    uploadsong_button = tk.Button(profile, text="Upload Song", command=lambda: uploadSongs())#function here)
+                    uploadsong_button.place(x=50, y=400)
+
+                    viewownsong_button = tk.Button(profile, text="View Own Song", command=lambda:viewownSong())#function here)
+                    viewownsong_button.place(x=150, y=400)
+
+                    manageplaylist_button = tk.Button(profile, text="Manage Playlist", command=lambda:manageownPlaylsit())#function here)
+                    manageplaylist_button.place(x=265, y=400)
+
+
+                def changetoartist():
+                    # change the user type database from listener to artist
+                    changeusertype = f'update user_tbl set usertype = "artist" where username = "{username}"'
+                    mycursor.execute(changeusertype)
+                    db.commit()
+                    messagebox.showinfo(title=None, message="You have successfully become an artist")
+                    profile.update()
+                    # raise_frame(profile)
+
+
+                if usertype == "listener":
+                    manageplaylist_button = tk.Button(profile, text="Manage Playlist", command=lambda:manageownPlaylsit())#function here)
+                    manageplaylist_button.place(x=70, y=400)
+
+                    changetoartist_button =tk.Button(profile, text="Become an Artist", command=lambda:changetoartist())#function here)
+                    changetoartist_button.place(x=220, y=400)
+                
+                user_quit_button = tk.Button(profile, text="Quit", width=12, justify='center', command=lambda: quit(top))
+                user_quit_button.place(x=380, y=400)
+
+                displayusername = tk.Label(profile, text=f"User Name : {username} ")
+                displayusername.place(x=200, y=80)
+                displayusername.config(fg='white', bg='#132933', font=('Helvatical bold',14, 'bold'))
+
+                displayusertype = tk.Label(profile, text=f"User Type : {usertype}")
+                displayusertype.place(x=200, y=140)
+                displayusertype.config(fg='white', bg='#132933', font=('Helvatical bold',14, 'bold'))
+
+                if subscription == 0:
+                    subscription = "Not Subscribed"
+                else:
+                    subscription = "Subscribed"
+
+                displaysubscription = tk.Label(profile, text=f"Subscription : {subscription}")
+                displaysubscription.place(x=200, y=200)
+                displaysubscription.config(fg='white', bg='#132933', font=('Helvatical bold',14, 'bold'))
+
+                displayuploaded = tk.Label(profile, fg='white', bg='#132933', text=f"Uploaded Songs : {uploaded}")
+                displayuploaded.place(x=200, y=260)
+                displayuploaded.config(fg='white', bg='#132933', font=('Helvatical bold',14, 'bold'))
+
+                displaydownloaded = tk.Label(profile, text=f"Downloaded Songs : {downloaded}")
+                displaydownloaded.place(x=200, y=320)
+                displaydownloaded.config(fg='white', bg='#132933', font=('Helvatical bold',14, 'bold'))
+
+                edit_profile_button = tk.Button(profile, text="Edit Profile", command=lambda: raise_frame(edit))
+                edit_profile_button.place(x=60, y=250)
 
 
 
@@ -671,7 +803,7 @@ if True:
             edit_profile_button = tk.Button(profile, text="Edit Profile", command=lambda: raise_frame(edit))
             edit_profile_button.place(x=60, y=250)
 
-      
+
 
 
 
@@ -779,6 +911,7 @@ if True:
                                 username_entry.delete(0, tk.END)
                                 password_entry.delete(0, tk.END)
 
+
                         # length of username cant be shorter than 4 characters
                         elif len(usern) <= 4:
                             messagebox.showinfo("Error", "Username cant be too short")
@@ -826,6 +959,8 @@ if True:
                             password_entry.delete(0, tk.END)
                             # edit.destroy()
                             # raise_frame(profile)
+
+                            copycat()
                     except:
                         messagebox.showerror("Error", "There is an error on the code")
 
@@ -1656,40 +1791,57 @@ if True:
 
                         # play whole playlist
                         running = True
-                        while running:
-                            # checking if any event has been
-                            # hosted at time of playing
-                            for event in pg.event.get():
-                                
-                                # A event will be hosted
-                                # after the end of every song
-                                if event.type == pg.USEREVENT:
-                                    print('Song Finished')
+                        
+                        try:
+
+                            while running:
+                                # pg.init()
+
+                                event_get = pg.event.get()
+
+                                # checking if any event has been
+                                # hosted at time of playing
+                                for event in event_get:
                                     
-                                    # Checking our playList
-                                    # that if any song exist or
-                                    # it is empty
-                                    if len(selected_path) > 0:
+                                    print("Event here")
+                                    print(event)
+                                    
+                                    # A event will be hosted
+                                    # after the end of every song
+                                    if event.type == pg.USEREVENT:
+                                        print('Song Finished')
                                         
-                                        # if song available then load it in player
-                                        # and remove from the player
-                                        pg.mixer.music.queue(selected_path[0])
-                                        selected_path.pop(0)
-                                # Checking whether the 
-                                # player is still playing any song
-                                # if yes it will return true and false otherwise
-                                # if not pg.mixer.music.get_busy():
-                                #     print("Playlist completed")
-                                if len(selected_path) ==0:
-                                    
-                                    # When the playlist has
-                                    # completed playing successfully
-                                    # we'll go out of the
-                                    # while-loop by using break
-                                    running = False
+                                        # Checking our playList
+                                        # that if any song exist or
+                                        # it is empty
+                                        if len(selected_path) > 0:
+                                            
+                                            # if song available then load it in player
+                                            # and remove from the player
+                                            pg.mixer.music.queue(selected_path[0])
+                                            selected_path.pop(0)
+                                    # Checking whether the 
+                                    # player is still playing any song
+                                    # if yes it will return true and false otherwise
+                                    if not pg.mixer.music.get_busy():
+                                        print("Playlist completed")
+                                    # if len(selected_path) ==0:
+                                        
+                                        # When the playlist has
+                                        # completed playing successfully
+                                        # we'll go out of the
+                                        # while-loop by using break
+                                        running = False
+
+                                        # pg.quit()
+                                        # pg.mixer.init()
+
+                                        break
+                        except:
+                            # it will have pygame video not initialist error, but we didnt use that so ..
+                            # plus if import all from pygame it will bug
+                            pass
                     except:
-                        # it will have pygame video not initialist error, but we didnt use that so ..
-                        # plus if import all from pygame it will bug
                         pass
 
 
@@ -1814,10 +1966,15 @@ if True:
 
 
                     def dissam2():
-                        cs = sam2listbox.curselection()
-                        plsam2 = sam2listbox.get(cs)
-
-                        varsg.set('{}'.format(plsam2))
+                        try:
+                            cs = sam2listbox.curselection()
+                            plsam2 = sam2listbox.get(cs)
+                            
+                            varsg.set('{}'.format(plsam2))
+                        
+                        except (UnboundLocalError, tk.TclError) as Error:
+                            pass
+                        
                     
                     lb2label = tk.Label(upframecp, text ="Songs in playlist", fg='white', bg='#132933', font=("Calibri", 12, 'bold'))
                     lb2label.grid(row=0, column=1)
@@ -1841,47 +1998,107 @@ if True:
 
                     # verify playlist no exist, if suc then insert
                     def createpl():
-                        execute_cr = False
-                        listex = []
-                        varplname = entered_name.get()
 
-                        if len(varplname) <= 3:
-                            messagebox.showinfo("Error", "Playlist name cannot be too short!")
-                        elif len(varplname) >= 50:
-                            messagebox.showinfo("Error", "Playlist name cannot be too long!")
+                        temp_uname = guest_user
+                        if guest_user == "":
+                            login_win()
                         else:
-                            # search existing playlist
-                            searchQuery = "select p.playlist_name from playlist_tbl p"
-                            mycursor.execute(searchQuery)
-                            myresult = mycursor.fetchall()
-                            print(myresult)
-                            for i in myresult:
-                                for j in i:
-                                    listex.append(j)
-                            if varplname not in listex:
-                                execute_cr = True
-                            else:
-                                messagebox.showinfo("Error", "Playlist exist!")
+                            def nice_sub():
+                                query ="select uid from user_tbl where username = '{}'".format(temp_uname)
+                                mycursor.execute(query)
+                                myresult = mycursor.fetchall() 
+                                for i in myresult:
+                                    for j in i:
+                                        uid = i
 
-                        if execute_cr:
-                            insertnewplaylist = "insert into `playlist_tbl` (uid, playlist_name) values ('{}','{}');".format(uid, varplname)
-                            mycursor.execute(insertnewplaylist)
-                            db.commit()
-                            messagebox.showinfo("Error", "Playlist Created!")
+                                sql = "update user_tbl set subscription = 1 where uid = '{}'".format(uid)
+                                mycursor.execute(sql)
+                                db.commit()
 
-                            #refresh
-                            query = "select playlist_name from playlist_tbl where uid = '{}'".format(uid)
+                            
+                            query = "select subscription from user_tbl where username = '{}'".format(temp_uname)
                             mycursor.execute(query)
                             myresult = mycursor.fetchall()
-                            listpl = []
                             for i in myresult:
                                 for j in i:
-                                    listpl.append(j)
+                                    is_sub = j
                             
-                            samlistbox.delete(0,"end")
-                            for playname in listpl:
-                                samlistbox.insert('end', playname)
-                            samlistbox.grid(row=1,column=0)
+                            if is_sub == 0:
+                                cpl.withdraw()
+                                subwin = Toplevel()
+                                subwin.geometry("250x200")
+                                subwin.title("Subscribe!")
+                                subwin.configure(bg='#132933')
+                                subwin.resizable(width=False, height=False)
+
+                                subtitlabel = tk.Label(subwin, text="Oops! You are not subscribed... \n  Please Subscribe to Support Us", fg='white', bg='#132933', font=("Calibri", 12, 'bold'))
+                                subtitlabel.place(x=10, y=6)
+
+                                label_sample = tk.Label(subwin, text="Payment Details :", fg='white', bg='#132933', font=("Calibri", 10, 'bold'))
+                                label_sample.place(x=3, y=70)
+                                entry_sample1 = tk.Entry(subwin)
+                                entry_sample1.place(x=110, y=70)
+
+
+                                label_sample2 = tk.Label(subwin, text="Password :", fg='white', bg='#132933', font=("Calibri", 10, 'bold'))
+                                label_sample2.place(x=3, y=100)
+                                entry_sample2 = tk.Entry(subwin)
+                                entry_sample2.place(x=110, y=100)
+
+                                button_sample = tk.Button(subwin, text="Confirm", command=nice_sub)
+                                button_sample.place(x=180, y=125)
+
+                                subBackButton = tk.Button(subwin, text="Back", command= lambda: subButton())
+                                subBackButton.place(x=135, y=125)
+
+                                def subButton():
+                                    subwin.destroy()
+                                    cpl.update()
+                                    cpl.deiconify()
+
+                            else:
+                        
+                                execute_cr = False
+                                listex = []
+                                varplname = entered_name.get()
+
+                                if len(varplname) <= 3:
+                                    messagebox.showinfo("Error", "Playlist name cannot be too short!")
+                                elif len(varplname) >= 50:
+                                    messagebox.showinfo("Error", "Playlist name cannot be too long!")
+                                else:
+                                    # search existing playlist
+                                    searchQuery = "select p.playlist_name from playlist_tbl p"
+                                    mycursor.execute(searchQuery)
+                                    myresult = mycursor.fetchall()
+                                    print(myresult)
+                                    for i in myresult:
+                                        for j in i:
+                                            listex.append(j)
+                                    if varplname not in listex:
+                                        execute_cr = True
+                                    else:
+                                        messagebox.showinfo("Error", "Playlist exist!")
+
+                                if execute_cr:
+                                    insertnewplaylist = "insert into `playlist_tbl` (uid, playlist_name) values ('{}','{}');".format(uid, varplname)
+                                    mycursor.execute(insertnewplaylist)
+                                    db.commit()
+                                    messagebox.showinfo("Error", "Playlist Created!")
+
+                                    #refresh
+                                    query = "select playlist_name from playlist_tbl where uid = '{}'".format(uid)
+                                    mycursor.execute(query)
+                                    myresult = mycursor.fetchall()
+                                    listpl = []
+                                    for i in myresult:
+                                        for j in i:
+                                            listpl.append(j)
+                                    
+                                    samlistbox.delete(0,"end")
+                                    for playname in listpl:
+                                        samlistbox.insert('end', playname)
+                                    samlistbox.grid(row=1,column=0)
 
                     # for create new playlsit
                     elabel = tk.Label(inframe_down3, text= 'New Playlist Name: ', fg='white', bg='#132933', font=("Calibri", 12, 'bold'))
@@ -1893,7 +2110,6 @@ if True:
 
                     create_button = tk.Button(inframe_down3, text="Create", command=createpl)
                     create_button.grid(row=2, column=1, padx=5, pady=5)
-                    
 
 
 
@@ -2371,7 +2587,7 @@ if True:
             if True:
                 tr_in_frame2 = tk.LabelFrame(mr_frame, text="Playlist Details", padx=5, pady=5, bg='#132933', border=0)
                 tr_in_frame2.config(fg='white', font=("Calibri", 15, 'bold'))
-                
+
                 global entryPlaylist_name
                 global entryPlaylist_user
                 entryPlaylist_name = tk.StringVar()
