@@ -12,7 +12,7 @@ from py_SQL import db_connection
 import wexpect
 import pexpect
 import pdb
-from driveconnector import FileUpload, FileDownload
+from driveconnector import FileUpload, FileDownload, ImageDownload, ImageUpload
 import os
 
 db, mycursor = db_connection()
