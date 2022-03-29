@@ -278,20 +278,20 @@ if True:
                     try:
                         cs = own_Listbox.curselection()
                         temp_own_pick = own_Listbox.get(cs)
+
+
+                        # use data to sql 
+                        searchAudioQuery ="select sum(l.like_status) from like_tbl l, audio_tbl a, user_tbl u where (a.aid = l.aid) and (a.uid = u.uid) and audio_name = '{}' and u.username = '{}'".format(temp_own_pick, temp_name)
+                        mycursor.execute(searchAudioQuery)
+                        myresult = mycursor.fetchall()
+                        print(myresult)
+                        for i in myresult:
+                            for j in i:
+                                likenum = j
+                        # set the entry value
+                        likeOwnnum.set("{}".format(likenum)) 
                     except (UnboundLocalError, tk.TclError) as Error:
                         pass
-
-
-                    # use data to sql 
-                    searchAudioQuery ="select sum(l.like_status) from like_tbl l, audio_tbl a, user_tbl u where (a.aid = l.aid) and (a.uid = u.uid) and audio_name = '{}' and u.username = '{}'".format(temp_own_pick, temp_name)
-                    mycursor.execute(searchAudioQuery)
-                    myresult = mycursor.fetchall()
-                    print(myresult)
-                    for i in myresult:
-                        for j in i:
-                            likenum = j
-                    # set the entry value
-                    likeOwnnum.set("{}".format(likenum)) 
 
                 searchAudioQuery = "select a.audio_name from audio_tbl a, user_tbl u where (a.uid = u.uid) and username ='{}'".format(temp_name)
                 mycursor.execute(searchAudioQuery)
@@ -369,24 +369,23 @@ if True:
                         try:
                             cs = samlistbox.curselection()
                             plsam = samlistbox.get(cs)
+                            global pickkplname
+                            pickkplname = plsam
+
+                            searchQuery = "select a.audio_name from audio_tbl a, playlist_tbl p, song_in_playlist s where (p.pid = s.pid) and (a.aid = s.aid) and playlist_name = '{}'".format(plsam)
+                            mycursor.execute(searchQuery)
+                            myresult = mycursor.fetchall()
+                            listsg = []
+                            for i in myresult:
+                                for j in i:
+                                    listsg.append(j)
+                            
+                            sam2listbox.delete(0,"end")
+                            for i in listsg:
+                                sam2listbox.insert("end", i)
+                            sam2listbox.grid(row=1, column=1)                        
                         except (UnboundLocalError, tk.TclError) as Error:
                             pass
-
-                        global pickkplname
-                        pickkplname = plsam
-
-                        searchQuery = "select a.audio_name from audio_tbl a, playlist_tbl p, song_in_playlist s where (p.pid = s.pid) and (a.aid = s.aid) and playlist_name = '{}'".format(plsam)
-                        mycursor.execute(searchQuery)
-                        myresult = mycursor.fetchall()
-                        listsg = []
-                        for i in myresult:
-                            for j in i:
-                                listsg.append(j)
-                        
-                        sam2listbox.delete(0,"end")
-                        for i in listsg:
-                            sam2listbox.insert("end", i)
-                        sam2listbox.grid(row=1, column=1)
 
                         # remove song selected from previous playlist
                         varsg.set('')
@@ -419,9 +418,9 @@ if True:
                         try:
                             cs = sam2listbox.curselection()
                             plsam2 = sam2listbox.get(cs)
+                            varsg.set('{}'.format(plsam2))
                         except (UnboundLocalError, tk.TclError) as Error:
                             pass
-                        varsg.set('{}'.format(plsam2))
                     
                     lb2label = tk.Label(upframecp, text ="Songs in playlist", fg='white', bg='#132933', font=("Calibri", 12, 'bold'))
                     lb2label.grid(row=0, column=1)
@@ -568,15 +567,16 @@ if True:
                     inframe_down.place(x=180, y=15)
 
                     def remol():
-
-                        plsam = pickkplname
-                        query = "select pid from playlist_tbl where playlist_name = '{}';".format(plsam)
-                        mycursor.execute(query)
-                        myresult = mycursor.fetchall()
-                        for i in myresult:
-                            for j in i:
-                                pid = j
-                        
+                        try:
+                            plsam = pickkplname
+                            query = "select pid from playlist_tbl where playlist_name = '{}';".format(plsam)
+                            mycursor.execute(query)
+                            myresult = mycursor.fetchall()
+                            for i in myresult:
+                                for j in i:
+                                    pid = j
+                        except:
+                            pass
 
                         remolsgname = entrysg.get()
                         query = "select aid from audio_tbl where audio_name = '{}';".format(remolsgname)
@@ -613,13 +613,16 @@ if True:
                     # inframe_down2.grid(row=0,column=1)
                     inframe_down2.place(x=335, y=15)
                     def addmol():
-                        plsam = pickkplname
-                        query = "select pid from playlist_tbl where playlist_name = '{}';".format(plsam)
-                        mycursor.execute(query)
-                        myresult = mycursor.fetchall()
-                        for i in myresult:
-                            for j in i:
-                                pid = j
+                        try:
+                            plsam = pickkplname
+                            query = "select pid from playlist_tbl where playlist_name = '{}';".format(plsam)
+                            mycursor.execute(query)
+                            myresult = mycursor.fetchall()
+                            for i in myresult:
+                                for j in i:
+                                    pid = j
+                        except:
+                            pass
                         
                         picked_sg = entryText_name.get()
                         query = "select aid from audio_tbl where audio_name = '{}';".format(picked_sg)
@@ -1932,27 +1935,29 @@ if True:
                         try:
                             cs = samlistbox.curselection()
                             plsam = samlistbox.get(cs)
+
+
+                            global pickkplname
+                            pickkplname = plsam
+
+
+                            searchQuery = "select a.audio_name from audio_tbl a, playlist_tbl p, song_in_playlist s where (p.pid = s.pid) and (a.aid = s.aid) and playlist_name = '{}'".format(plsam)
+                            mycursor.execute(searchQuery)
+                            myresult = mycursor.fetchall()
+                            listsg = []
+                            for i in myresult:
+                                for j in i:
+                                    listsg.append(j)
+                            
+                            sam2listbox.delete(0,"end")
+                            for i in listsg:
+                                sam2listbox.insert("end", i)
+                            sam2listbox.grid(row=1, column=1)
+
+                                # remove song selected from previous playlist
+                            varsg.set('')
                         except (UnboundLocalError, tk.TclError) as Error:
                             pass
-
-                        global pickkplname
-                        pickkplname = plsam
-
-                        searchQuery = "select a.audio_name from audio_tbl a, playlist_tbl p, song_in_playlist s where (p.pid = s.pid) and (a.aid = s.aid) and playlist_name = '{}'".format(plsam)
-                        mycursor.execute(searchQuery)
-                        myresult = mycursor.fetchall()
-                        listsg = []
-                        for i in myresult:
-                            for j in i:
-                                listsg.append(j)
-                        
-                        sam2listbox.delete(0,"end")
-                        for i in listsg:
-                            sam2listbox.insert("end", i)
-                        sam2listbox.grid(row=1, column=1)
-
-                        # remove song selected from previous playlist
-                        varsg.set('')
 
                     lblabel = tk.Label(upframecp, text = "Your playlist", fg='white', bg='#132933', font=("Calibri", 12, 'bold'))
                     lblabel.grid(row=0, column = 0)
@@ -2134,15 +2139,16 @@ if True:
                     inframe_down.place(x=180, y=15)
 
                     def remol():
-
-                        plsam = pickkplname
-                        query = "select pid from playlist_tbl where playlist_name = '{}';".format(plsam)
-                        mycursor.execute(query)
-                        myresult = mycursor.fetchall()
-                        for i in myresult:
-                            for j in i:
-                                pid = j
-                        
+                        try:
+                            plsam = pickkplname
+                            query = "select pid from playlist_tbl where playlist_name = '{}';".format(plsam)
+                            mycursor.execute(query)
+                            myresult = mycursor.fetchall()
+                            for i in myresult:
+                                for j in i:
+                                    pid = j
+                        except:
+                            pass
 
                         remolsgname = entrysg.get()
                         query = "select aid from audio_tbl where audio_name = '{}';".format(remolsgname)
@@ -2179,13 +2185,16 @@ if True:
                     # inframe_down2.grid(row=0,column=1)
                     inframe_down2.place(x=335, y=15)
                     def addmol():
-                        plsam = pickkplname
-                        query = "select pid from playlist_tbl where playlist_name = '{}';".format(plsam)
-                        mycursor.execute(query)
-                        myresult = mycursor.fetchall()
-                        for i in myresult:
-                            for j in i:
-                                pid = j
+                        try:
+                            plsam = pickkplname
+                            query = "select pid from playlist_tbl where playlist_name = '{}';".format(plsam)
+                            mycursor.execute(query)
+                            myresult = mycursor.fetchall()
+                            for i in myresult:
+                                for j in i:
+                                    pid = j
+                        except:
+                            pass
                         
                         picked_sg = entryText_name.get()
                         query = "select aid from audio_tbl where audio_name = '{}';".format(picked_sg)
@@ -2638,35 +2647,38 @@ if True:
         # Show music player
         if True:
             global br_in_frame1
-            br_in_frame1 = tk.LabelFrame(br_frame, text="Music Player", padx=5, pady=5, bg="#132933")
+            br_in_frame1 = tk.LabelFrame(br_frame, fg='white', bg="#132933", font=("Calibri", 15, 'bold'), border=0)
 
-            playing_Label = tk.Label(br_in_frame1, text="Now Playing: ", bg="#132933")
-            playing_Label.grid(row=0, column=0)
+            playing_Label = tk.Label(br_in_frame1, text="Now Playing: ", fg='white', bg="#132933", font=("Calibri", 12, 'bold'))
+            playing_Label.place(x=0, y=63)
             global entryPlayingAudio
             entryPlayingAudio = tk.StringVar()
-            playing_entry = tk.Entry(br_in_frame1, textvariable=entryPlayingAudio, state="disabled", justify=tk.CENTER)
-            playing_entry.grid(row=0, column=1, columnspan=3)
+            playing_entry = tk.Entry(br_in_frame1, textvariable=entryPlayingAudio, width=25, state="disabled", justify=tk.CENTER)
+            playing_entry.place(x=100, y=65)
 
 
             # play pause and stop
             if True:
                 
                 # copied code
-                playButton = tk.Button(br_in_frame1, text = "Play", command = playSong)
-                playButton.grid(row=1,column=0)
+                musicLabel = tk.Label(br_in_frame1, text="Music Player", fg='white', bg='#132933', font=("Calibri", 20, 'bold'))
+                musicLabel.place(x=55, y=5)
+
+                playButton = tk.Button(br_in_frame1, width=10, text="Play", command = playSong)
+                playButton.place(x=15, y=100)
 
                 pauseButton = tk.Button(br_in_frame1, text ='▶', command = lambda:[pauseSong()])
-                pauseButton.grid(row=1,column=2)
+                pauseButton.place(x=110, y=100)
 
-                stopButton = tk.Button(br_in_frame1, text = "Stop", command = stopSong)
-                stopButton.grid(row=1,column=3)
+                stopButton = tk.Button(br_in_frame1, width=6, text="Stop", command = stopSong)
+                stopButton.place(x=140, y=100)
 
 
                 volupButton = tk.Button(br_in_frame1, text ='🔊', command = lambda:[volup()])
-                volupButton.grid(row=0,column=4)
+                volupButton.place(x=200, y=100)
 
                 voldownButton = tk.Button(br_in_frame1, text ='🔉', command = lambda:[voldown()])
-                voldownButton.grid(row=1,column=4)
+                voldownButton.place(x=230, y=100)
                 
                 # dont plan on this, cuz it gives decimals, you can try, line 1685 uncomment
                 # volnowButton = tk.Button(br_in_frame1, text ='1', state=DISABLED,command = lambda:[])
@@ -2678,7 +2690,7 @@ if True:
                 # skipButton = tk.Button(br_in_frame1, text ='►▮', command = lambda:[voldown()])
                 # skipButton.grid(row=2,column=1)
 
-            br_in_frame1.grid(row=1, column=1)
+            br_in_frame1.place(x=135, y=30, width=260, height=150)
 
         # Show Playlist
         if True:
@@ -2691,19 +2703,19 @@ if True:
             selectedPlaylist_name = tk.StringVar()
             # selectedPlaylist_user= tk.StringVar()
 
-            labels = tk.Label(br_in_frame2, text = "Selected Playlist")
-            labels.grid(row=0, column=0)
+            labels = tk.Label(br_in_frame2, text = "Selected Playlist", fg='white', bg='#132933', font=("Calibri", 12, 'bold'))
+            labels.grid()
 
             entry_nameBR = tk.Entry(br_in_frame2, textvariable=selectedPlaylist_name, state="disabled", fg="pink", justify=tk.CENTER)
-            entry_nameBR.grid(row=1, column=0)
+            entry_nameBR.grid()
             # entry_PlaylistBR= tk.Entry(br_in_frame2, textvariable=selectedPlaylist_user, state="disabled", fg="pink", justify=tk.CENTER)
             # entry_PlaylistBR.grid(row=1, column=0)
 
             selected_Listbox = tk.Listbox(br_in_frame2, height=10, width=20)
             selected_Listbox.bind('<<ListboxSelect>>', lambda x: pick_selected_p())
-            selected_Listbox.grid(row=2,column=0)
+            selected_Listbox.grid()
 
-            br_in_frame2.grid(row=1, column=0)
+            br_in_frame2.grid()
 
 
 
