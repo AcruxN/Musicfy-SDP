@@ -110,13 +110,11 @@ if True:
             for row in results:
                 # display profile
                     path = "image/"+row[7]
-                    print(path)
                     if os.path.exists(path):
                         ini_img = Image.open(path)
                         img = ImageTk.PhotoImage(ini_img.resize((150,150), Image.ANTIALIAS))
                         label = tk.Label(profile, image = img)
                         label.place(x=20, y=90)
-                        print(path)
                     else:#display default profile if databse is none
                         ini_img = Image.open("image/defaultprofile.jpg")
                         img = ImageTk.PhotoImage(ini_img.resize((150,150), Image.ANTIALIAS))
@@ -875,12 +873,14 @@ if True:
             def check_info():
                 usern = username_entry.get()
                 passw = password_entry.get()
+
                 checkuser = "SELECT username FROM user_tbl"
                 mycursor.execute(checkuser)
                 userexists = mycursor.fetchall()
 
                 check_symbol= re.compile('[@_!#$%^&*()<>?/\|}{~:]')
-                # messagebox.showinfo("Message","Username taken please use another username")
+
+                # checks if entry box is empty 
                 if len(usern) == 0:
                     messagebox.showinfo("Error", "Username Can\'t be empty")
                 elif len(passw) == 0:
@@ -889,7 +889,7 @@ if True:
                     try:
                         # checks if user exists in database
                         # if yes, it will show a error message
-                        if userexists:
+                        if usern in (item[0] for item in userexists):
                             messagebox.showinfo("Error", "Username Already Exists!")
                             if len(passw) > 10:
                                 messagebox.showinfo("Error", "Password cant be too long")
@@ -961,12 +961,11 @@ if True:
                             # clears the input box empty after a successful registration process
                             username_entry.delete(0, tk.END)
                             password_entry.delete(0, tk.END)
-                            # edit.destroy()
-                            # raise_frame(profile)
 
                             copycat()
-                    except:
-                        messagebox.showerror("Error", "There is an error on the code")
+
+                    except UnboundLocalError:
+                        pass
 
 
 
