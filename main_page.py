@@ -9,7 +9,8 @@ from PIL import ImageTk, Image
 import re
 import pygame as pg
 from py_SQL import db_connection
-from driveconnector import ImageDownload, ImageUpload
+
+from driveconnector import FileUpload, FileDownload
 import os
 
 db, mycursor = db_connection()
@@ -1757,11 +1758,28 @@ if True:
                 
                 # if play a single song
                 if type(selected_path) == str:
-                    pg.mixer.music.load(r"{}".format(selected_path))
-                    pg.mixer.music.play(-1)
-                    temp_name = entryText_name.get()
-                    entryPlayingAudio.set("{}".format(temp_name))
-                    pauseButton["text"] = "▮▮"
+                    if os.path.exists(selected_path):
+                        pg.mixer.music.load(r"{}".format(selected_path))
+                        pg.mixer.music.play(-1)
+                        temp_name = entryText_name.get()
+                        entryPlayingAudio.set("{}".format(temp_name))
+                        pauseButton["text"] = "▮▮"
+                    else:
+                        Findsongs="select * from audio_tbl where audio_path = '{}'".format(selected_path)
+                        mycursor.execute(Findsongs)
+                        myresult = mycursor.fetchall()
+                        for i in myresult:
+                            id=i[4]
+                            name_split = i[3].split("/")
+                            song_name = name_split[1]
+
+                        FileDownload(id, song_name, username)
+                        pg.mixer.music.load(r"{}".format(selected_path))
+                        pg.mixer.music.play(-1)
+                        temp_name = entryText_name.get()
+                        entryPlayingAudio.set("{}".format(temp_name))
+                        pauseButton["text"] = "▮▮"
+                
                 
                 #if play a playlist
                 elif type(selected_path) == list:
@@ -1779,7 +1797,19 @@ if True:
                         index = selected_path.index(song_path_now)
                         
                         # load selected music
-                        pg.mixer.music.load(r"{}".format(selected_path[index]))
+                        if os.path.exists(selected_path[index]):
+                            pg.mixer.music.load(r"{}".format(selected_path[index]))
+                        else:
+                            Findsongs="select * from audio_tbl where audio_path = '{}'".format(selected_path[index])
+                            mycursor.execute(Findsongs)
+                            myresult = mycursor.fetchall()
+                            for i in myresult:
+                                id=i[4]
+                                name_split = i[3].split("/")
+                                song_name = name_split[1]
+
+                            FileDownload(id, song_name, username)
+                            pg.mixer.music.load(r"{}".format(selected_path[index]))
 
                         # remove current, previous from list
                         z = 0
