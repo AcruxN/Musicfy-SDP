@@ -1,4 +1,5 @@
 # ============================= Imported Modules =============================
+import subprocess
 import tkinter as tk
 from tkinter import DISABLED, StringVar, filedialog
 from tkinter import messagebox, Listbox, Toplevel
@@ -9,8 +10,8 @@ from PIL import ImageTk, Image
 import re
 import pygame as pg
 from py_SQL import db_connection
-import wexpect
-import pexpect
+# import wexpect
+# from pexpect import popen_spawn
 import pdb
 from driveconnector import FileUpload, FileDownload, ImageDownload, ImageUpload
 import os
@@ -111,12 +112,8 @@ if True:
             results = mycursor.fetchall()
 
             # os.system("c")
-            child = pexpect.popen_spawn.PopenSpawn('cmd', timeout=1)
-            child.expect('>')
-            child.sendline('python child.py')
-            child.expect ('> (Pdb)')
-            child.sendline ('c')
-
+            # breakpoint()
+            global img
             # display profile
             for row in results:
                 # display profile
@@ -149,8 +146,6 @@ if True:
                 # ============================ Functions =======================================
                 #IMPORTANT: py_SQL.py file make changes for cursor :- mycursor = db.cursor(buffered=True)
 
-                user_id = str(1) #Get user id from database when login with query
-                file_path=''
                 #Get menu choice
                 def get_category():
                     global categoryList
@@ -176,11 +171,11 @@ if True:
                     global audio_name
                     global file_path
                     global audio_category
-                    audio_creator = "_"  + str(user_id)
-                    audio_name = inputName.get() + audio_creator
+                    global filepath
+                    audio_name = inputName.get()
                     filepath = file_path
                     # Catch error
-                    if audio_name == audio_creator:
+                    if audio_name == '':
                         messagebox.showwarning('Error!', 'Please enter audio name!')
                         
                     elif filepath == '':
@@ -188,13 +183,11 @@ if True:
                     elif len(categoryList) == 0:        
                         messagebox.showwarning('Error!', 'Please choose a category!')
                     else:
-                        #Copy audio to the file (If able to host databse, change to upload to database)
-                        audio_uploaded = shutil.copy(file_path, 'C:/Users/USER/OneDrive/Documents/GitHub/Musicfy-SDP/audio_files folder/') #change to audio file path
-                        #rename file to match audio name and aid
-                        global audio_location
-
-                        audio_location = 'C:/Users/USER/OneDrive/Documents/GitHub/Musicfy-SDP/audio_files folder/' + audio_name  + '_'+user_id+'.mp3'
-                        os.rename(audio_uploaded, audio_location) #Rename audio in audio folder as name entered
+                        file_name = audio_name
+                        global uploadid
+                        uploadid = FileUpload(file_name, user_id, file_path) #get username
+                        
+                        
                         # All category selected
 
                         for c in categoryList:
@@ -224,35 +217,40 @@ if True:
                     db.commit()
 
                 def Update_database():
+                    global filepath
                     try:
                         #Insert list into database
-                        audio_sql = "INSERT INTO audio_tbl (audio_name, uid, audio_path) VALUES ('{}','{}','{}')".format(audio_name, user_id, audio_location)
-                        mycursor.execute(audio_sql)
+                        audio_dir = filepath.split("/")
+                        audio_path = "audio//" + audio_dir[-1]
+                        audio_sql = """INSERT INTO audio_tbl (audio_name, uid, audio_path, song_id) VALUES (%s,%s,%s,%s)"""
+
+                        record = (audio_name, user_id, audio_path, uploadid) 
+                        mycursor.execute(audio_sql, record)
                         db.commit()
                         messagebox.showinfo('', 'Audio uploaded successfully!')
                     except Exception as e:
                         db.rollback()
 
-                # ============================================================================================================================================
+                #============================================================================================================================================
 
                 def Upload_audio():
                     #Create and display upload audio label
-                    uploadAudio = tk.Label(up_song, text = "Upload Audio", font=('Italic', 15, "bold"), fg="white", bg='#132933')
-                    uploadAudio.grid(row = 0, column = 0 , columnspan=2)
+                    uploadAudio = tk.Label(up_song, text = "Upload Audio", font=('Italic', 14), fg="dark blue")
+                    uploadAudio.grid(row = 0, column = 0)
                     #Create and display audio name input bar
-                    audioName = tk.Label(up_song, text = "Audio Name:", font=('Italic', 10, "bold"), fg="white", bg='#132933')
+                    audioName = tk.Label(up_song, text = "Audio Name:", font=('Italic', 10), fg="black", )
                     audioName.grid(sticky='W',row=1,column=0)
                     global inputName
                     inputName = tk.Entry(up_song)
                     inputName.grid(row=1,column=1)
                     #Select audio file label and button
-                    audioFile = tk.Label(up_song, text = "Select audio file:", font=('Italic', 10, "bold"), fg="white", bg='#132933')
+                    audioFile = tk.Label(up_song, text = "Select audio file:", font=('Italic', 10), fg="black", )
                     audioFile.grid(sticky='W',row=2,column=0)
 
                     Open_button = tk.Button(up_song, text='Open', command= Select_file)
                     Open_button.grid(sticky='W', row=2,column=1)
                     # Category label
-                    Category = tk.Label(up_song, text = "Category:", font=('Italic', 10, "bold"), fg="white", bg='#132933')
+                    Category = tk.Label(up_song, text = "Category:", font=('Italic', 10), fg="black", )
                     Category.grid(sticky='NW',row=3,column=0)
                     #Create listbox
                     global category_list
@@ -263,19 +261,13 @@ if True:
                         
                     category_list.grid(row=3, column=1)
                     #Upload button
-                    Upload_button = tk.Button(up_song, text='Upload', command=lambda:[get_category(), Audio_upload(), Update_database(), updateAudio_category()]) 
+                    Upload_button = tk.Button(up_song, text='Upload', command=lambda:[get_category(), Audio_upload(), Update_database(), updateAudio_category(), up_song.destroy(), user(username)]) 
                     Upload_button.grid(sticky='E', row=4,column=1)
-
-                    upload_quit_button = tk.Button(up_song, text="Back", command= lambda: backButton())
-                    upload_quit_button.grid(sticky='E', row=0, column=1)
-
-                def backButton():
-                    up_song.destroy()
-                    top.update()
-                    top.deiconify()
+                    
 
 
                 Upload_audio()
+
 
             # ============================================= View Own Song Function ============================================= #
             # namtung code
@@ -466,7 +458,7 @@ if True:
                                 myresult = mycursor.fetchall() 
                                 for i in myresult:
                                     for j in i:
-                                        uid = i
+                                        uid = j
 
                                 sql = "update user_tbl set subscription = 1 where uid = '{}'".format(uid)
                                 mycursor.execute(sql)
@@ -517,6 +509,7 @@ if True:
                                 execute_cr = False
                                 listex = []
                                 varplname = entered_name.get()
+                                print(varplname)
 
                                 if len(varplname) <= 3:
                                     messagebox.showinfo("Error", "Playlist name cannot be too short!")
@@ -527,7 +520,6 @@ if True:
                                     searchQuery = "select p.playlist_name from playlist_tbl p"
                                     mycursor.execute(searchQuery)
                                     myresult = mycursor.fetchall()
-                                    print(myresult)
                                     for i in myresult:
                                         for j in i:
                                             listex.append(j)
@@ -696,6 +688,7 @@ if True:
 
                     viewownsong_button = tk.Button(profile, text="View Own Song", command=lambda:viewownSong())#function here)
                     viewownsong_button.place(x=150, y=400)
+
 
                     manageplaylist_button = tk.Button(profile, text="Manage Playlist", command=lambda:manageownPlaylsit())#function here)
                     manageplaylist_button.place(x=265, y=400)
@@ -1771,20 +1764,22 @@ if True:
                         entryPlayingAudio.set("{}".format(temp_name))
                         pauseButton["text"] = "▮▮"
                     else:
-                        Findsongs="select * from audio_tbl where audio_path = '{}'".format(selected_path)
-                        mycursor.execute(Findsongs)
-                        myresult = mycursor.fetchall()
-                        for i in myresult:
-                            id=i[4]
-                            name_split = i[3].split("/")
-                            song_name = name_split[1]
-
-                        FileDownload(id, song_name, username)
-                        pg.mixer.music.load(r"{}".format(selected_path))
-                        pg.mixer.music.play(-1)
-                        temp_name = entryText_name.get()
-                        entryPlayingAudio.set("{}".format(temp_name))
-                        pauseButton["text"] = "▮▮"
+                        if guest_user == "":
+                             messagebox.showinfo("Error","Please login!")
+                        else:
+                            Findsongs="select * from audio_tbl where audio_path = '{}'".format(selected_path)
+                            mycursor.execute(Findsongs)
+                            myresult = mycursor.fetchall()
+                            for i in myresult:
+                                songid=i[4]
+                                name_split = i[3].split("/")
+                                song_name = name_split[1]
+                            FileDownload(songid, song_name, guest_user)
+                            pg.mixer.music.load(r"{}".format(selected_path))
+                            pg.mixer.music.play(-1)
+                            temp_name = entryText_name.get()
+                            entryPlayingAudio.set("{}".format(temp_name))
+                            pauseButton["text"] = "▮▮"
                 
                 
                 #if play a playlist
@@ -1806,16 +1801,19 @@ if True:
                         if os.path.exists(selected_path[index]):
                             pg.mixer.music.load(r"{}".format(selected_path[index]))
                         else:
-                            Findsongs="select * from audio_tbl where audio_path = '{}'".format(selected_path[index])
-                            mycursor.execute(Findsongs)
-                            myresult = mycursor.fetchall()
-                            for i in myresult:
-                                id=i[4]
-                                name_split = i[3].split("/")
-                                song_name = name_split[1]
+                            if guest_user == "":
+                                messagebox.showinfo("Error","Please login!")
+                            else:
+                                Findsongs="select * from audio_tbl where audio_path = '{}'".format(selected_path[index])
+                                mycursor.execute(Findsongs)
+                                myresult = mycursor.fetchall()
+                                for i in myresult:
+                                    songid=i[4]
+                                    name_split = i[3].split("/")
+                                    song_name = name_split[1]
 
-                            FileDownload(id, song_name, username)
-                            pg.mixer.music.load(r"{}".format(selected_path[index]))
+                                FileDownload(songid, song_name, guest_user)
+                                pg.mixer.music.load(r"{}".format(selected_path[index]))
 
                         # remove current, previous from list
                         z = 0
@@ -1859,44 +1857,6 @@ if True:
 
                             check_event()
 
-                            # # play whole playlist
-                            # running = True
-                            # while running:
-                            #     # pg.init()
-
-
-                            #     # Code stops here because pygame.event need pg.init(), which breaks the whole program because when in while loop, cant do other stuff
-                            #     event_get = pg.event.get()
-
-                            #     # checking if any event has been hosted at time of playing
-                            #     for event in event_get:
-                                    
-                            #         # print("Event here")
-                            #         # print(event)
-                                    
-                            #         # A event will be hosted after the end of every song
-                            #         if event.type == pg.USEREVENT:
-                            #             print('Song Finished')
-                                        
-                            #             # Checking our playList that if any song exist or it is empty
-                            #             if len(selected_path) > 0:
-                                            
-                            #                 # if song available then load it in player
-                            #                 # and remove from the player
-                            #                 pg.mixer.music.queue(selected_path[0])
-                            #                 selected_path.pop(0)
-                            #         # Checking whether the player is still playing any song if yes it will return true and false otherwise
-                            #         if not pg.mixer.music.get_busy():
-                            #             print("Playlist completed")
-                            #         # if len(selected_path) ==0:
-                                        
-                            #             # When the playlist has completed playing successfully we'll go out of the while-loop by using break
-                            #             running = False
-
-                            #             # pg.quit()
-                            #             # pg.mixer.init()
-
-                            #             break
                     except:
                             # it will have pygame video not initialist error, but we didnt use that so ..
                             # plus if import all from pygame it will bug
@@ -2068,7 +2028,7 @@ if True:
                                 myresult = mycursor.fetchall() 
                                 for i in myresult:
                                     for j in i:
-                                        uid = i
+                                        uid = j
 
                                 sql = "update user_tbl set subscription = 1 where uid = '{}'".format(uid)
                                 mycursor.execute(sql)
@@ -2720,16 +2680,6 @@ if True:
 
                 voldownButton = tk.Button(br_in_frame1, text ='🔉', command = lambda:[voldown()])
                 voldownButton.place(x=230, y=100)
-                
-                # dont plan on this, cuz it gives decimals, you can try, line 1685 uncomment
-                # volnowButton = tk.Button(br_in_frame1, text ='1', state=DISABLED,command = lambda:[])
-                # volnowButton.grid(row=1,column=5)
-
-                # prevButton = tk.Button(br_in_frame1, text ='▮◄', command = lambda:[voldown()])
-                # prevButton.grid(row=2,column=0)
-
-                # skipButton = tk.Button(br_in_frame1, text ='►▮', command = lambda:[voldown()])
-                # skipButton.grid(row=2,column=1)
 
             br_in_frame1.place(x=135, y=30, width=260, height=150)
 

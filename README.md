@@ -4,12 +4,16 @@ Module used:
 
     tkinter
     pygame
+    pillow
+    google-api-python-client 
+    google-auth-httplib2 
+    google-auth-oauthlib
 
 mySQL database structure
 
-    =>Database structure used in _sampleSQL.sql
+    Database structure used in mysql.sql
 
-To host, need:
+To Run, need:
 
     musicfy.ico
     py_SQL.py to connect mySQL database (Sample given)

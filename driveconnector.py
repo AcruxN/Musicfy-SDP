@@ -23,48 +23,32 @@ SCOPES = ['https://www.googleapis.com/auth/drive.file']
 SERVICE_ACCOUNT_FILE = 'ServiceAccount.json'
 creds = service_account.Credentials.from_service_account_file(
         SERVICE_ACCOUNT_FILE, scopes=SCOPES)
-    # The file token.json stores the user's access and refresh tokens, and is
-    # created automatically when the authorization flow completes for the first
-    # time.
-# if os.path.exists('token.json'):
-#     creds = Credentials.from_authorized_user_file('token.json', SCOPES)
-# # If there are no (valid) credentials available, let the user log in.
-# if not creds or not creds.valid:
-#     if creds and creds.expired and creds.refresh_token:
-#         creds.refresh(Request())
-#     else:
-#         flow = InstalledAppFlow.from_client_secrets_file(
-#             'credentials.json', SCOPES)
-#         creds = flow.run_local_server(port=0)
-#     # Save the credentials for the next run
-#     with open('token.json', 'w') as token:
-#         token.write(creds.to_json())
-
 # create an object
 service = build('drive', 'v3', credentials=creds)
 # file_id = '1qZb8wbJudVIiTvHSojY33YkzgrkmzxfH'
 
 # get file path
-def FileUpload(file_name, Username, file_path):
+def FileUpload(file_name, uid, file_path):
     flag = False
-    checkupload = f"select username, subscription, uploaded from user_tbl where username = '{Username}'"
+    checkupload = f"select subscription, uploaded from user_tbl where uid = '{uid}'"
     mycursor.execute(checkupload)
     myresult = mycursor.fetchall()
     for i in myresult:
-        if i[1]==False:
-            if i[2]>=15:
+        if i[0]==False:
+            if i[1]>=15:
                 flag = False
+                print('sth')
             else:
                 flag = True
-        elif i[1]==True:
+        elif i[0]==True:
             flag = True
     if flag == True:
         file_metadata = {'name': file_name, 'parents': ['1fLldujG9j82no3x9hYlsat6Vw8FQTsZ-']}#to send the data to google drive
         media = MediaFileUpload(file_path, mimetype='audio/mpeg')#specify the file type 
         file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()#execution 
-        uploadid = ('File ID: %s' % file.get('id'))#get the file id
-        newupload = i[2]+1
-        upload_update = f"Update user_tbl set uploaded = {newupload} where username = '{Username}'"
+        uploadid = ('%s' % file.get('id'))#get the file id
+        newupload = i[1]+1
+        upload_update = f"Update user_tbl set uploaded = {newupload} where uid = '{uid}'"
         mycursor.execute(upload_update)
         db.commit()
         return uploadid
@@ -73,9 +57,9 @@ def FileUpload(file_name, Username, file_path):
 
 def searchfolder():
     results = service.files().list(
-        pageSize=10, fields="nextPageToken, files(id, name)",q="'1fLldujG9j82no3x9hYlsat6Vw8FQTsZ-' in parents").execute()
+        pageSize=100, fields="nextPageToken, files(id, name)",q="'1fLldujG9j82no3x9hYlsat6Vw8FQTsZ-' in parents").execute()
     items = results.get('files', [])
-
+    print(items)
     if not items:
         print('No files found.')
 
@@ -109,7 +93,7 @@ def FileDownload(file_id, file_name, Username):
                 status, done = downloader.next_chunk()
             fh.seek(0)
             # Write the received data to the file
-            path = 'audio_files folder'
+            path = 'audio_files'
 
             if not os.path.exists(path):
                 os.makedirs(path)
@@ -169,7 +153,8 @@ def ImageUpload(image_name, user_id):
     return uploadid
 
 searchfolder()
+# FileDownload()
 # print(FileDownload('1VVKlc1ecmpJs2arxxhlvsBovgv9hAitw', 'test.mp3','admin'))
-# print(FileUpload('test.mp3'))
-# a = ImageUpload('smalllogo.png')
+# print(FileUpload('test1',2, 'test.mp3'))
+# a = ImageUpload('a.png', 1)
 # ImageDownload(a, 'test2.jpg')
