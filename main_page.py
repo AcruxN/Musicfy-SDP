@@ -31,11 +31,11 @@ pg.mixer.init()
 # Change Window(Application) Title
 root.title("Musicfy")
 # Change icon
-# root.iconbitmap(r"musicfy.ico")
+root.iconbitmap(r"musicfy.ico")
 # # Change Window's size
-# root.geometry("800x600")
+root.geometry("800x600")
 # Fix window's size
-# root.resizable(width=False, height=False)
+root.resizable(width=False, height=False)
 # ============================================================================== #
 
 
@@ -50,7 +50,8 @@ if True:
 
         login = tk.Toplevel()
         login.geometry("950x500")
-        login.title("Musicfy") 
+        login.title("Musicfy")
+        login.iconbitmap(r"musicfy.ico") 
         login.configure(bg='#132933')
         login.resizable(width=False, height=False)
         # root.iconbitmap(r"musicfy.ico") # musicfy window icon
@@ -79,6 +80,7 @@ if True:
         def user(username):
             login.withdraw()
             top = Toplevel()
+            top.iconbitmap(r"musicfy.ico")
             top.geometry("500x500")
             top.title("User Page")
             global guest_user
@@ -137,6 +139,7 @@ if True:
             def uploadSongs():
                 top.withdraw()
                 up_song = Toplevel()
+                up_song.iconbitmap(r"musicfy.ico")
                 up_song.geometry("300x300")
                 up_song.configure(bg='#132933')
                 up_song.title("Upload Songs")
@@ -304,6 +307,7 @@ if True:
                 # ================================================================================ #
                 top.withdraw()
                 ownsong = Toplevel()
+                ownsong.iconbitmap(r"musicfy.ico")
                 ownsong.title("My Published Song")
                 ownsong.geometry("300x300")
                 # ownsong.resizable(height=False, width=False)
@@ -348,6 +352,7 @@ if True:
                 # new window
                 top.withdraw()
                 cpl = Toplevel()
+                cpl.iconbitmap(r"musicfy.ico")
                 cpl.geometry("500x400")
                 cpl.title("My Playlist")
                 # cpl.resizable(height=False, width=False)
@@ -995,6 +1000,7 @@ if True:
         def admin(username):
             login.withdraw()
             top = Toplevel()
+            top.iconbitmap(r"musicfy.ico")
             top.geometry("450x460")
             top.configure(bg='#132933')
             top.resizable(height=False, width=False)
@@ -1765,7 +1771,7 @@ if True:
                         pauseButton["text"] = "▮▮"
                     else:
                         if guest_user == "":
-                             messagebox.showinfo("Error","Please login!")
+                            messagebox.showinfo("Error","Please login!")
                         else:
                             Findsongs="select * from audio_tbl where audio_path = '{}'".format(selected_path)
                             mycursor.execute(Findsongs)
@@ -1910,8 +1916,9 @@ if True:
                 tobeadded = entryText_name.get()
 
                 # new window
-                root.withdraw()
+                # root.withdraw()
                 cpl = Toplevel()
+                cpl.iconbitmap(r"musicfy.ico")
                 cpl.geometry("500x400")
                 cpl.title("My Playlist")
                 # cpl.resizable(height=False, width=False)
@@ -2045,6 +2052,7 @@ if True:
                             if is_sub == 0:
                                 cpl.withdraw()
                                 subwin = Toplevel()
+                                subwin.iconbitmap(r"musicfy.ico")
                                 subwin.geometry("250x200")
                                 subwin.title("Subscribe!")
                                 subwin.configure(bg='#132933')
@@ -2225,13 +2233,13 @@ if True:
                     buttonsg2 = tk.Button(inframe_down2, text="Add to playlist", command=addmol)
                     buttonsg2.grid(row=2, column=0, padx=5, pady=5)
 
-                    myplaylist_back = tk.Button(downframecp, width=15, text="Back", command= lambda: backButton())
-                    myplaylist_back.place(x=190, y=115)
+                    # myplaylist_back = tk.Button(downframecp, width=15, text="Back", command= lambda: backButton())
+                    # myplaylist_back.place(x=190, y=115)
 
-                def backButton():
-                    cpl.destroy()
-                    root.update()
-                    root.deiconify()
+                # def backButton():
+                #     cpl.destroy()
+                #     root.update()
+                #     root.deiconify()
 
             downframecp.grid()
 
