@@ -11,10 +11,10 @@ def db_connection():
     mycursor = db.cursor()
     return db, mycursor
 
-db, mycursor = db_connection()
+#db, mycursor = db_connection()
 
-audioQuery = mycursor.execute("select * from audio_tbl")
-myresult = mycursor.fetchall()
+#audioQuery = mycursor.execute("select * from audio_tbl")
+#myresult = mycursor.fetchall()
 
-for x in myresult:
-  print(x)
+#for x in myresult:
+#    print(x)
